@@ -1,0 +1,5 @@
+@include('partials.inputs.name')
+@include('partials.inputs.language.read')
+@include('partials.inputs.language.write')
+@include('partials.inputs.language.speak')
+@include('partials.inputs.language.understand')

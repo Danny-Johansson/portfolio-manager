@@ -1,0 +1,6 @@
+@include('partials.inputs.name')
+@include('partials.inputs.experience_type')
+@include('partials.inputs.location')
+@include('partials.inputs.start_date')
+@include('partials.inputs.end_date')
+@include('partials.inputs.note')

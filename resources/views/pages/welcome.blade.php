@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
 @section('heading')
-    Welcome
+    @lang('welcome')
 @endsection
 
 @section('content')
-    This website is currently under construction.<br>
-    Check back soon.
+    @lang('under_construction')<br>
+    @lang('check_soon')
 @endsection

@@ -19,8 +19,11 @@ return new class extends Migration
 
             $table->string('name');
 
-            $table->dateTime('start');
-            $table->dateTime('end');
+            $table->dateTime('start_date');
+            $table->dateTime('end_date');
+
+            $table->string('location');
+            $table->text('note')->nullable();
 
             $table->foreignId('experience_type_id')
                 ->constrained()

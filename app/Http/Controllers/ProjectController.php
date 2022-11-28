@@ -2,119 +2,190 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Permission;
 use App\Models\Project;
+use Illuminate\Auth\Access\Response;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ProjectController extends Controller
 {
     /**
      * Display a listing of the resource.
-     *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function index()
+    public function index(Request $request): View
     {
-        $object = Project::all();
+        $perPage = $request->input('per_page') ?? 10;
+        $search_term =  $request->input('search_term');
+        $search_type = $request->input('search_type');
+        $search_compare = $request->input('search_compare');
+
+        $search_types = [];
+        $search_types[] = array("value" => "name", "name" => "name");
+
+        if($search_term != ""){
+            switch ($search_type){
+                case "name":
+                    switch($search_compare){
+                        case("="):
+                            $data = Project::where('name','=',$search_term)->paginate($perPage);
+                            break;
+                        default:
+                            $data = Project::where('name','like','%' . $search_term . '%')->paginate($perPage);
+                            break;
+                    }
+                    break;
+            }
+        }
+        else{
+            $data = Project::paginate($perPage);
+        }
 
         return view('general.index')
-            ->with('data',$object)
-            ;
+            ->with('data',$data)
+            ->with('search_types',$search_types)
+            ->with('singular','project')
+            ->with('plural','projects')
+        ;
     }
 
     /**
      * Display a listing of the deleted resource.
-     *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function deleted()
+    public function deleted(Request $request): View
     {
-        $object = Project::onlyTrashed()->all();
+        $perPage = $request->input('per_page') ?? 10;
+        $search_term =  $request->input('search_term');
+        $search_type = $request->input('search_type');
+        $search_compare = $request->input('search_compare');
+
+        $search_types = [];
+        $search_types[] = array("value" => "name", "name" => "name");
+
+        if($search_term != ""){
+            switch ($search_type){
+                case "name":
+                    switch($search_compare){
+                        case("="):
+                            $data = Project::where('name','=',$search_term)->onlyTrashed()->paginate($perPage);
+                            break;
+                        default:
+                            $data = Project::where('name','like','%' . $search_term . '%')->onlyTrashed()->paginate($perPage);
+                            break;
+                    }
+                    break;
+            }
+        }
+        else{
+            $data = Project::onlyTrashed()->paginate($perPage);
+        }
 
         return view('general.deleted')
-            ->with('data',$object)
-            ;
+            ->with('data',$data)
+            ->with('search_types',$search_types)
+            ->with('singular','project')
+            ->with('plural','projects')
+            ->with('no_create',true)
+        ;
     }
 
     /**
      * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function create()
+    public function create(): View|Response
     {
-        return view('general.create');
+        if(Auth::user()){
+            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=', 'projects_create')))
+            {
+                return view('pages.denied');
+            }
+        }
+        else{
+            return view('pages.denied');
+        }
+
+        return view('general.create')
+            ->with('singular','project')
+            ->with('plural','projects')
+        ;
     }
 
     /**
      * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
-        $object = Project::create([
 
-        ]);
+        if (isset($request->name) && !empty($request->name)){
+            $object = Project::create([
+                'name' => $request->name
+            ]);
+        }
+        else{
+            return back()
+                ->with('error',__('name')." ".__('cannot')." ".__('beBlank'))
+            ;
+        }
 
         return redirect()
             ->route('projects.index')
-            ->with('success',__('project')." ".__('created')." ".__('with')." ID :".$object->id)
-            ;
+            ->with('success',__('project')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('created'))
+        ;
     }
 
     /**
      * Display the specified resource.
-     *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function show(Request $request,$project)
+    public function show($project): View
     {
         $object = Project::where('id','=',$project)->first();
 
         return view('general.show')
             ->with('data',$object)
-            ;
+            ->with('singular','project')
+            ->with('plural','projects')
+        ;
     }
 
     /**
      * Show the form for editing the specified resource.
-     *
-     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View
      */
-    public function edit(Request $request,$project)
+    public function edit($project): View
     {
         $object = Project::where('id','=',$project)->first();
 
         return view('general.edit')
             ->with('data',$object)
-            ;
+            ->with('singular','project')
+            ->with('plural','projects')
+        ;
     }
 
     /**
      * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request,$project)
+    public function update($project, Request $request): RedirectResponse
     {
-        $object = Project::where('id','=',$project)->first();
+        $object = Project::where('id', '=', $project)->first();
+
+        if (isset($request->name) && !empty($request->name)){
+            $object->name = $request->name;
+        }
 
         $object->save();
 
         return redirect()
             ->route('projects.index')
-            ->with('success',__('project')." ".__('with')." ID :".$object->id." ".__('updated'))
-            ;
+            ->with('success',__('project')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('updated'))
+        ;
     }
 
     /**
      * Remove the specified resource from storage.
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(Request $request,$project)
+    public function destroy($project): RedirectResponse
     {
         $object = Project::where('id','=',$project)->first();
 
@@ -122,16 +193,14 @@ class ProjectController extends Controller
 
         return redirect()
             ->route('projects.index')
-            ->with('success',__('project')." ".__('with')." ID :".$object->id." ".__('deleted'))
-            ;
+            ->with('success',__('project')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('deleted'))
+        ;
     }
 
     /**
      * Permanently Remove the specified resource from storage.
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy_force(Request $request,$project)
+    public function destroy_force($project): RedirectResponse
     {
         $object = Project::onlyTrashed()
             ->where('id','=',$project)
@@ -142,16 +211,14 @@ class ProjectController extends Controller
 
         return redirect()
             ->route('projects.deleted')
-            ->with('success',__('project')." ".__('with')." ID :".$object->id." ".__('force_deleted'))
-            ;
+            ->with('success',__('project')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('forceDeleted'))
+        ;
     }
 
     /**
      * Restore the specified resource from storage.
-     *
-     * @return \Illuminate\Http\RedirectResponse
      */
-    public function restore(Request $request,$project)
+    public function restore($project): RedirectResponse
     {
         $object = Project::onlyTrashed()
             ->where('id','=',$project)
@@ -160,6 +227,10 @@ class ProjectController extends Controller
 
         $object->restore();
 
-        return redirect()->route('projects.deleted')->with('success',__('project')." ".__('with')." ID :".$object->id." ".__('restored'));;
+        return redirect()
+            ->route('projects.deleted')
+            ->with('success',__('project')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('restored'))
+        ;
     }
+
 }

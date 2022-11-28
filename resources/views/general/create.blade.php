@@ -1,3 +1,16 @@
 @extends('layouts.app')
 
-@include(request()->segment(1).'.form_data')
+@section('top')
+@endsection
+
+@section('heading')
+    @lang('create') @lang($singular)
+@endsection
+
+@section('content')
+    <form method="post" action="{{route(request()->segment(1).'.store')}}">
+        @include(request()->segment(1).'.create_data')
+        @include('partials.submit.create')
+    </form>
+@endsection
+

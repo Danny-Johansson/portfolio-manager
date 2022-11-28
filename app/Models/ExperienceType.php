@@ -9,4 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ExperienceType extends Model
 {
     use HasFactory,SoftDeletes;
+
+    protected $fillable = [
+        'name'
+    ];
 }

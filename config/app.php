@@ -211,21 +211,4 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Custom Environment Variables
-    |--------------------------------------------------------------------------
-    |
-    |
-    |
-    |
-    |
-    */
-
-    'first_name' => env('FIRST_NAME', 'John'),
-    'last_name' => env('LAST_NAME', 'Doe'),
-    'follow_up_spacing' => env('FOLLOW_UP_SPACING', '5 weekdays'),
-    'follow_up_times' => env('FOLLOW_UP_SPACING', 3),
-
 ];

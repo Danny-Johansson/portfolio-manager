@@ -1,0 +1,5 @@
+@include('partials.inputs.name')
+@include('partials.inputs.issuer')
+@include('partials.inputs.earn_date')
+@include('partials.inputs.expire_date')
+@include('partials.inputs.note')

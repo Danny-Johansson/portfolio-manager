@@ -10,6 +10,13 @@ class Tag extends Model
 {
     use HasFactory,SoftDeletes;
 
+    protected $fillable = [
+        'name',
+        'tag_category_id',
+        'text_color',
+        'background_color',
+        'border_color',
+    ];
     public function taggable()
     {
         return $this->morphTo();
@@ -17,6 +24,6 @@ class Tag extends Model
 
     public function category()
     {
-        return $this->belongsTo(TagCategory::class);
+        return $this->belongsTo(TagCategory::class,'tag_category_id');
     }
 }

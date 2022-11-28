@@ -1,0 +1,5 @@
+@include('partials.inputs.name')
+@include('partials.inputs.tag_category')
+@include('partials.inputs.text_color')
+@include('partials.inputs.background_color')
+@include('partials.inputs.border_color')

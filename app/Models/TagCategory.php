@@ -9,4 +9,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class TagCategory extends Model
 {
     use HasFactory,SoftDeletes;
+
+    protected $fillable = [
+        'name',
+        'text_color',
+        'background_color',
+        'border_color',
+    ];
 }

@@ -1,8 +1,1 @@
-@section('heading')
-    Projects Edit
-@endsection
-
-@section('content')
-    Projects Edit
-    @include('projects.form_data')
-@endsection
+@include(request()->segment(1).'.form_data')

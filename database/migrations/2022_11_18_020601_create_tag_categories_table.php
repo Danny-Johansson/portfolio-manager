@@ -19,7 +19,8 @@ return new class extends Migration
 
             $table->string('name');
             $table->string('background_color');
-            $table->string('text-color');
+            $table->string('text_color');
+            $table->string('border_color');
 
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));

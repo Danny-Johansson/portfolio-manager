@@ -14,44 +14,82 @@ class ArtisanController extends Controller
         Artisan::call('view:cache');
         Artisan::call('route:cache');
 
-        return redirect()->route('root')->with('success', 'Cached Config, Views and Routes');
+        return redirect()
+            ->route('root')
+            ->with('success', 'Cached Config, Views and Routes')
+        ;
     }
 
     public function cacheConfig(){
+
         Artisan::call('config:cache');
-        return redirect()->route('root')->with('success', 'Cached Config');
+
+        return redirect()
+            ->route('root')
+            ->with('success', 'Cached Config')
+        ;
     }
 
     public function cacheView(){
+
         Artisan::call('view:cache');
-        return redirect()->route('root')->with('success', 'Cached Views');
+
+        return redirect()
+            ->route('root')
+            ->with('success', 'Cached Views')
+        ;
     }
 
     public function cacheRoute(){
+
         Artisan::call('route:cache');
-        return redirect()->route('root')->with('success', 'Cached Routes');
+
+        return redirect()
+            ->route('root')
+            ->with('success', 'Cached Routes')
+        ;
     }
 
 
     public function clearAll(){
+
         Artisan::call('config:clear');
         Artisan::call('view:clear');
         Artisan::call('route:clear');
-        return redirect()->route('root')->with('success', 'Cleared Config, Routes and Views');
+
+        return redirect()
+            ->route('root')
+            ->with('success', 'Cleared Config, Routes and Views')
+        ;
     }
 
     public function clearConfig(){
+
         Artisan::call('config:clear');
-        return redirect()->route('root')->with('success', 'Cleared Config');
+
+        return redirect()
+            ->route('root')
+            ->with('success', 'Cleared Config')
+        ;
     }
 
     public function clearView(){
+
         Artisan::call('view:clear');
-        return redirect()->route('root')->with('success', 'Cleared Views');
+
+        return redirect()
+            ->route('root')
+            ->with('success', 'Cleared Views')
+        ;
     }
 
     public function clearRoute(){
+
         Artisan::call('route:clear');
-        return redirect()->route('root')->with('success', 'Cleared Routes');
+
+        return redirect()
+            ->route('root')
+            ->with('success', 'Cleared Routes')
+        ;
     }
 }

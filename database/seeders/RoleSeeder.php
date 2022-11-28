@@ -17,13 +17,13 @@ class RoleSeeder extends Seeder
     public function run()
     {
         $items = [
-            ['name' => 'Administrator'],
+            ['name' => 'Owner'],
             ['name' => 'Demonstration'],
         ];
         foreach ($items as $item) {
             Role::create($item);
         }
 
-        Role::where('name', '=', 'Administrator')->first()->permissions()->sync(Permission::all());
+        Role::where('name', '=', 'Owner')->first()->permissions()->sync(Permission::all());
     }
 }

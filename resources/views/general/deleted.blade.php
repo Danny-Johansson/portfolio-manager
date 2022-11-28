@@ -1,3 +1,9 @@
 @extends('layouts.app')
 
-@include(request()->segment(1).'.deleted_data')
+@section('top')
+    @include('partials.page_elements.index_top')
+@endsection
+
+@section('content')
+    @include(request()->segment(1).'.deleted_data')
+@endsection
