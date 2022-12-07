@@ -6,7 +6,7 @@
 
 @section('content')
     <div class="row">
-        <div class="col-2">
+        <div class="col-2" id="about_image">
             @if(isset($owner->image) AND !empty($owner->image))
                 <img
                     src="{{$owner->image}}"
@@ -16,7 +16,7 @@
                 >
             @endif
         </div>
-        <div class="col-10">
+        <div class="col-10" id="about_text">
             @lang('about.journeyman')
             <br><br>
             @lang('about.spare_time')

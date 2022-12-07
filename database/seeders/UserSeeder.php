@@ -18,7 +18,12 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $items = [
-
+            [
+                'name' => 'Admin Account',
+                'email' => 'admin@danny-johansson.online',
+                'password' => Hash::make('Pass.1234'),
+                'role_id' => Role::where('name','=','Administrator')->first()->id,
+            ],
             [
                 'name' => 'Demo Account',
                 'email' => 'demo@danny-johansson.online',
