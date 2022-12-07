@@ -18,12 +18,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $items = [
-            [
-                'name' => 'Danny Johansson',
-                'email' => 'danny@danny-johansson.online',
-                'password' => Hash::make('Pinae.1159'),
-                'role_id' => Role::where('name','=','Owner')->first()->id,
-            ],
+
             [
                 'name' => 'Demo Account',
                 'email' => 'demo@danny-johansson.online',
