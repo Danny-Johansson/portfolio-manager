@@ -14,18 +14,22 @@
             <thead class="text-capitalize fw-bold">
                 <tr>
                     @include(request()->segment(1).".labels")
-                    <th>@lang("inputs.action")</th>
+                    @auth
+                        <th>@lang("inputs.action")</th>
+                    @endauth
                 </tr>
             </thead>
             <tbody class="text-capitalize">
                 @foreach($data as $object)
                     <tr>
                         @include(request()->segment(1).".display_data")
-                        @if(\View::exists(request()->segment(1).".index_data"))
-                            @include(request()->segment(1).".index_data")
-                        @else
-                            @include('partials.page_elements.index_actions',['col' => '2'])
-                        @endif
+                        @auth
+                            @if(\View::exists(request()->segment(1).".index_data"))
+                                @include(request()->segment(1).".index_data")
+                            @else
+                                @include('partials.page_elements.index_actions',['col' => '2'])
+                            @endif
+                        @endauth
                     </tr>
                 @endforeach
             </tbody>

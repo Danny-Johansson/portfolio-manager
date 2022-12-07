@@ -17,7 +17,6 @@
                 @else
                     {{$tag->name}}
                 @endif
-
             </span>
         @endforeach
     @else
