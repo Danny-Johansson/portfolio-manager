@@ -1,7 +1,7 @@
 @section('heading')
-    Projects Show
+    @lang(request()->segment(1).".plural")
 @endsection
 
 @section('content')
-    Projects Show
+    @lang(request()->segment(1).".plural")
 @endsection

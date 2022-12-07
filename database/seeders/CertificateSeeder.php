@@ -14,7 +14,7 @@ class CertificateSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $cisco = CertificateIssuer::where('name','=','Cisco')->first()->id;
         $certiport = CertificateIssuer::where('name','=','Certiport')->first()->id;

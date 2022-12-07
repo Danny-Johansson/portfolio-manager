@@ -15,7 +15,7 @@ class LanguageLevelController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languageLevels_index')))
@@ -64,7 +64,7 @@ class LanguageLevelController extends Controller
     /**
      * Display a listing of the deleted resource.
      */
-    public function deleted(Request $request): View
+    public function deleted(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languageLevels_deleted')))
@@ -114,7 +114,7 @@ class LanguageLevelController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languageLevels_create')))
@@ -135,7 +135,7 @@ class LanguageLevelController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse|View
+    public function store(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languageLevels_create')))
@@ -149,7 +149,7 @@ class LanguageLevelController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
@@ -161,21 +161,21 @@ class LanguageLevelController extends Controller
         }
         else{
             return back()
-                ->with('error',__('name')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.name')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
 
         return redirect()
             ->route('languageLevels.index')
-            ->with('success',__('languageLevel')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('created'))
+            ->with('success',__('languageLevel')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.created'))
         ;
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($languageLevel): View
+    public function show($languageLevel): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languageLevels_view')))
@@ -188,6 +188,12 @@ class LanguageLevelController extends Controller
         }
 
         $object = LanguageLevel::where('id','=',$languageLevel)->first();
+        if(!$object){
+            return redirect()
+                ->route('languageLevels.index')
+                ->with('error',__('languageLevel')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.show')
             ->with('data',$object)
@@ -199,7 +205,7 @@ class LanguageLevelController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($languageLevel): View
+    public function edit($languageLevel): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languageLevels_update')))
@@ -212,6 +218,12 @@ class LanguageLevelController extends Controller
         }
 
         $object = LanguageLevel::where('id','=',$languageLevel)->first();
+        if(!$object){
+            return redirect()
+                ->route('languageLevels.index')
+                ->with('error',__('languageLevel')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.edit')
             ->with('data',$object)
@@ -223,7 +235,7 @@ class LanguageLevelController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update($languageLevel, Request $request): RedirectResponse|View
+    public function update($languageLevel, Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languageLevels_update')))
@@ -237,12 +249,18 @@ class LanguageLevelController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         $object = LanguageLevel::where('id', '=', $languageLevel)->first();
+        if(!$object){
+            return redirect()
+                ->route('languageLevels.index')
+                ->with('error',__('languageLevel')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         if (isset($request->name) && !empty($request->name)){
             $object->name = $request->name;
@@ -252,14 +270,14 @@ class LanguageLevelController extends Controller
 
         return redirect()
             ->route('languageLevels.index')
-            ->with('success',__('languageLevel')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('updated'))
+            ->with('success',__('languageLevel')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.updated'))
         ;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($languageLevel): RedirectResponse|View
+    public function destroy($languageLevel): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languageLevels_delete')))
@@ -272,22 +290,28 @@ class LanguageLevelController extends Controller
         }
 
         $object = LanguageLevel::where('id','=',$languageLevel)->first();
+        if(!$object){
+            return redirect()
+                ->route('languageLevels.index')
+                ->with('error',__('languageLevel')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->delete();
 
         return redirect()
             ->route('languageLevels.index')
-            ->with('success',__('languageLevel')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('deleted'))
+            ->with('success',__('languageLevel')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.deleted'))
         ;
     }
 
     /**
      * Permanently Remove the specified resource from storage.
      */
-    public function destroy_force($languageLevel): RedirectResponse|View
+    public function destroy_force($languageLevel): View|RedirectResponse
     {
         if(Auth::user()){
-            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languageLevels_delete_force')))
+            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languageLevels_deleteForce')))
             {
                 return view('pages.denied');
             }
@@ -300,19 +324,25 @@ class LanguageLevelController extends Controller
             ->where('id','=',$languageLevel)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('languageLevels.deleted')
+                ->with('error',__('languageLevel')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->forceDelete();
 
         return redirect()
             ->route('languageLevels.deleted')
-            ->with('success',__('languageLevel')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('forceDeleted'))
+            ->with('success',__('languageLevel')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.forceDeleted'))
         ;
     }
 
     /**
      * Restore the specified resource from storage.
      */
-    public function restore($languageLevel): RedirectResponse|View
+    public function restore($languageLevel): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languageLevels_restore')))
@@ -328,12 +358,18 @@ class LanguageLevelController extends Controller
             ->where('id','=',$languageLevel)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('languageLevels.deleted')
+                ->with('error',__('languageLevel')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->restore();
 
         return redirect()
             ->route('languageLevels.deleted')
-            ->with('success',__('languageLevel')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('restored'))
+            ->with('success',__('languageLevel')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.restored'))
         ;
     }
 }

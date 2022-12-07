@@ -1,0 +1,9 @@
+<th>
+    @if(Lang::has($type.".".$data))
+        @lang($type.".".$data)
+    @elseif(Lang::has('system.'.$data))
+        @lang("system.".$data)
+    @else
+        {{$data}}
+    @endif
+</th>

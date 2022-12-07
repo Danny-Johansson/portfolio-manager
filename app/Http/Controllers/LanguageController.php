@@ -16,7 +16,7 @@ class LanguageController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languages_index')))
@@ -65,7 +65,7 @@ class LanguageController extends Controller
     /**
      * Display a listing of the deleted resource.
      */
-    public function deleted(Request $request): View
+    public function deleted(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languages_deleted')))
@@ -115,7 +115,7 @@ class LanguageController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languages_create')))
@@ -139,7 +139,7 @@ class LanguageController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse|View
+    public function store(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languages_create')))
@@ -153,14 +153,14 @@ class LanguageController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         if (isset($request->name) && empty($request->name)){
             return back()
-                ->with('error',__('name')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.name')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
@@ -175,14 +175,14 @@ class LanguageController extends Controller
 
         return redirect()
             ->route('languages.index')
-            ->with('success',__('language')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('created'))
+            ->with('success',__('language')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.created'))
         ;
     }
 
     /**
      * Display the specified resource.s
      */
-    public function show($language): View
+    public function show($language): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languages_view')))
@@ -195,6 +195,12 @@ class LanguageController extends Controller
         }
 
         $object = Language::where('id','=',$language)->first();
+        if(!$object){
+            return redirect()
+                ->route('languages.index')
+                ->with('error',__('language')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.show')
             ->with('data',$object)
@@ -206,7 +212,7 @@ class LanguageController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($language): View
+    public function edit($language): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languages_update')))
@@ -219,6 +225,13 @@ class LanguageController extends Controller
         }
 
         $object = Language::where('id','=',$language)->first();
+        if(!$object){
+            return redirect()
+                ->route('languages.index')
+                ->with('error',__('language')." ".__('not')." ".__('system.found'))
+                ;
+        }
+
         $levels = LanguageLevel::all();
 
         return view('general.edit')
@@ -232,7 +245,7 @@ class LanguageController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update($language, Request $request): RedirectResponse|View
+    public function update($language, Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languages_update')))
@@ -246,12 +259,18 @@ class LanguageController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         $object = Language::where('id', '=', $language)->first();
+        if(!$object){
+            return redirect()
+                ->route('languages.index')
+                ->with('error',__('language')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         if (isset($request->name) && !empty($request->name)){
             $object->name = $request->name;
@@ -277,14 +296,14 @@ class LanguageController extends Controller
 
         return redirect()
             ->route('languages.index')
-            ->with('success',__('language')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('updated'))
+            ->with('success',__('language')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.updated'))
         ;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($language): RedirectResponse|View
+    public function destroy($language): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languages_delete')))
@@ -297,22 +316,28 @@ class LanguageController extends Controller
         }
 
         $object = Language::where('id','=',$language)->first();
+        if(!$object){
+            return redirect()
+                ->route('languages.index')
+                ->with('error',__('language')." ".__('not')." ".__('system.found'))
+                ;
+        }
 
         $object->delete();
 
         return redirect()
             ->route('languages.index')
-            ->with('success',__('language')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('deleted'))
+            ->with('success',__('language')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.deleted'))
         ;
     }
 
     /**
      * Permanently Remove the specified resource from storage.
      */
-    public function destroy_force($language): RedirectResponse|View
+    public function destroy_force($language): View|RedirectResponse
     {
         if(Auth::user()){
-            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languages_delete_force')))
+            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languages_deleteForce')))
             {
                 return view('pages.denied');
             }
@@ -325,19 +350,25 @@ class LanguageController extends Controller
             ->where('id','=',$language)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('languages.deleted')
+                ->with('error',__('language')." ".__('not')." ".__('system.found'))
+                ;
+        }
 
         $object->forceDelete();
 
         return redirect()
             ->route('languages.deleted')
-            ->with('success',__('language')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('forceDeleted'))
+            ->with('success',__('language')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.forceDeleted'))
         ;
     }
 
     /**
      * Restore the specified resource from storage.
      */
-    public function restore($language): RedirectResponse|View
+    public function restore($language): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','languages_restore')))
@@ -353,12 +384,18 @@ class LanguageController extends Controller
             ->where('id','=',$language)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('languages.deleted')
+                ->with('error',__('language')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->restore();
 
         return redirect()
             ->route('languages.deleted')
-            ->with('success',__('language')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('restored'))
+            ->with('success',__('language')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.restored'))
         ;
     }
 }

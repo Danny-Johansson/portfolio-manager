@@ -4,7 +4,7 @@
 @endsection
 
 @section('heading')
-    @lang('edit') @lang($singular) @if(!empty($data->name)) :  {{$data->name}}@else @lang('with') ID : {{$data->id}}@endif
+    @lang('system.edit') @lang(request()->segment(1).".".$singular) @if(!empty($data->name)) :  {{$data->name}}@else @lang('with') ID : {{$data->id}}@endif
 @endsection
 
 @section('content')

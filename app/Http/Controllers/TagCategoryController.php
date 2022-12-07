@@ -15,7 +15,7 @@ class TagCategoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tagCategories_index')))
@@ -64,7 +64,7 @@ class TagCategoryController extends Controller
     /**
      * Display a listing of the deleted resource.
      */
-    public function deleted(Request $request): View
+    public function deleted(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tagCategories_deleted')))
@@ -114,7 +114,7 @@ class TagCategoryController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tagCategories_create')))
@@ -135,7 +135,7 @@ class TagCategoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse|View
+    public function store(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tagCategories_create')))
@@ -149,35 +149,35 @@ class TagCategoryController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
-        if (!isset($request->name) && !empty($request->name)){
+        if (isset($request->name) && empty($request->name)){
             return back()
-                ->with('error',__('name')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.name')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
 
-        if (!isset($request->text_color) && !empty($request->text_color)){
+        if (isset($request->text_color) && empty($request->text_color)){
             return back()
-                ->with('error',__('text_color')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.text_color')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
 
-        if (!isset($request->background_color) && !empty($request->background_color)){
+        if (isset($request->background_color) && empty($request->background_color)){
             return back()
-                ->with('error',__('background_color')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('background_color')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
 
-        if (!isset($request->border_color) && !empty($request->border_color)){
+        if (isset($request->border_color) && empty($request->border_color)){
             return back()
-                ->with('error',__('border_color')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.border_color')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
@@ -191,14 +191,14 @@ class TagCategoryController extends Controller
 
         return redirect()
             ->route('tagCategories.index')
-            ->with('success',__('tagCategory')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('created'))
+            ->with('success',__('tagCategory')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.created'))
         ;
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($tagCategory): View
+    public function show($tagCategory): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tagCategories_view')))
@@ -211,6 +211,12 @@ class TagCategoryController extends Controller
         }
 
         $object = TagCategory::where('id','=',$tagCategory)->first();
+        if(!$object){
+            return redirect()
+                ->route('tagCategories.index')
+                ->with('error',__('tagCategory')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.show')
             ->with('data',$object)
@@ -222,7 +228,7 @@ class TagCategoryController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($tagCategory): View
+    public function edit($tagCategory): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tagCategories_update')))
@@ -235,6 +241,12 @@ class TagCategoryController extends Controller
         }
 
         $object = TagCategory::where('id','=',$tagCategory)->first();
+        if(!$object){
+            return redirect()
+                ->route('tagCategories.index')
+                ->with('error',__('tagCategory')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.edit')
             ->with('data',$object)
@@ -246,7 +258,7 @@ class TagCategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update($tagCategory, Request $request): RedirectResponse|View
+    public function update($tagCategory, Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tagCategories_update')))
@@ -260,12 +272,18 @@ class TagCategoryController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         $object = TagCategory::where('id', '=', $tagCategory)->first();
+        if(!$object){
+            return redirect()
+                ->route('tagCategories.index')
+                ->with('error',__('tagCategory')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         if (isset($request->name) && !empty($request->name)){
             $object->name = $request->name;
@@ -287,14 +305,14 @@ class TagCategoryController extends Controller
 
         return redirect()
             ->route('tagCategories.index')
-            ->with('success',__('tagCategory')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('updated'))
+            ->with('success',__('tagCategory')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.updated'))
         ;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($tagCategory): RedirectResponse|View
+    public function destroy($tagCategory): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tagCategories_delete')))
@@ -307,22 +325,28 @@ class TagCategoryController extends Controller
         }
 
         $object = TagCategory::where('id','=',$tagCategory)->first();
+        if(!$object){
+            return redirect()
+                ->route('tagCategories.index')
+                ->with('error',__('tagCategory')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->delete();
 
         return redirect()
             ->route('tagCategories.index')
-            ->with('success',__('tagCategory')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('deleted'))
+            ->with('success',__('tagCategory')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.deleted'))
         ;
     }
 
     /**
      * Permanently Remove the specified resource from storage.
      */
-    public function destroy_force($tagCategory): RedirectResponse|View
+    public function destroy_force($tagCategory): View|RedirectResponse
     {
         if(Auth::user()){
-            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tagCategories_delete_force')))
+            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tagCategories_deleteForce')))
             {
                 return view('pages.denied');
             }
@@ -335,19 +359,25 @@ class TagCategoryController extends Controller
             ->where('id','=',$tagCategory)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('tagCategories.deleted')
+                ->with('error',__('tagCategory')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->forceDelete();
 
         return redirect()
             ->route('tagCategories.deleted')
-            ->with('success',__('tagCategory')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('forceDeleted'))
+            ->with('success',__('tagCategory')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.forceDeleted'))
         ;
     }
 
     /**
      * Restore the specified resource from storage.
      */
-    public function restore($tagCategory): RedirectResponse|View
+    public function restore($tagCategory): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tagCategories_restore')))
@@ -363,12 +393,18 @@ class TagCategoryController extends Controller
             ->where('id','=',$tagCategory)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('tagCategories.deleted')
+                ->with('error',__('tagCategory')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->restore();
 
         return redirect()
             ->route('tagCategories.deleted')
-            ->with('success',__('tagCategory')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('restored'))
+            ->with('success',__('tagCategory')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.restored'))
         ;
     }
 }

@@ -14,14 +14,11 @@ class CerificatePolicy
 
     /**
      * Create a new policy instance.
-     *
-     * @return void
      */
     public function __construct()
     {
         //
     }
-
 
     /**
      * Determine whether the user can view any models.
@@ -105,7 +102,7 @@ class CerificatePolicy
      */
     public function delete_force(): Response
     {
-        return Auth::user()->role->permissions->contains(Permission::firstWhere('name','=','certificates_delete_force'))
+        return Auth::user()->role->permissions->contains(Permission::firstWhere('name','=','certificates_deleteForce'))
             ? Response::allow()
             : Response::deny('you are not the chosen one')
         ;

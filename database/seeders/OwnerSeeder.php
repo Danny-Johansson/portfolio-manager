@@ -13,7 +13,7 @@ class OwnerSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $items = [
             [
@@ -24,7 +24,6 @@ class OwnerSeeder extends Seeder
                 'city' => 'Odense',
                 'country' => 'Denmark',
                 'email' => 'danny@danny-johansson.online',
-                'phone' => '+45 28885492',
                 'license' => 1,
             ],
         ];

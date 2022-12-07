@@ -102,7 +102,7 @@ class ExperiencePolicy
      */
     public function delete_force(): Response
     {
-        return Auth::user()->role->permissions->contains(Permission::firstWhere('name','=','experiences_delete_force'))
+        return Auth::user()->role->permissions->contains(Permission::firstWhere('name','=','experiences_deleteForce'))
             ? Response::allow()
             : Response::deny('you are not the chosen one')
         ;

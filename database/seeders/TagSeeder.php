@@ -14,7 +14,7 @@ class TagSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
 
         $framework = TagCategory::where('name','=','Framework')->first()->id;
@@ -23,7 +23,6 @@ class TagSeeder extends Seeder
         $authentication = TagCategory::where('name','=','Authentication')->first()->id;
         $markup = TagCategory::where('name','=','Markup')->first()->id;
         $styling = TagCategory::where('name','=','Styling')->first()->id;
-        $security = TagCategory::where('name','=','Security')->first()->id;
 
         $items = [
             [
@@ -80,10 +79,6 @@ class TagSeeder extends Seeder
             ],
             [
                 'name' => 'Bootstrap',
-                'tag_category_id' => $styling
-            ],
-            [
-                'name' => 'Tailwind',
                 'tag_category_id' => $styling
             ],
             [

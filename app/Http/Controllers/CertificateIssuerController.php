@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\CertificateIssuer;
 use App\Models\Permission;
-use App\Models\TagCategory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,7 +15,7 @@ class CertificateIssuerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificateIssuers_index')))
@@ -65,7 +64,7 @@ class CertificateIssuerController extends Controller
     /**
      * Display a listing of the deleted resource.
      */
-    public function deleted(Request $request): View
+    public function deleted(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificateIssuers_deleted')))
@@ -115,7 +114,7 @@ class CertificateIssuerController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificateIssuers_create')))
@@ -136,7 +135,7 @@ class CertificateIssuerController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse|View
+    public function store(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificateIssuers_create')))
@@ -150,35 +149,35 @@ class CertificateIssuerController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
-        if (!isset($request->name) && !empty($request->name)){
+        if (isset($request->name) && empty($request->name)){
             return back()
-                ->with('error',__('name')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.name')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
 
-        if (!isset($request->text_color) && !empty($request->text_color)){
+        if (isset($request->text_color) && empty($request->text_color)){
             return back()
-                ->with('error',__('text_color')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.text_color')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
 
-        if (!isset($request->background_color) && !empty($request->background_color)){
+        if (isset($request->background_color) && empty($request->background_color)){
             return back()
-                ->with('error',__('background_color')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('background_color')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
 
-        if (!isset($request->border_color) && !empty($request->border_color)){
+        if (isset($request->border_color) && empty($request->border_color)){
             return back()
-                ->with('error',__('border_color')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.border_color')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
@@ -192,14 +191,14 @@ class CertificateIssuerController extends Controller
 
         return redirect()
             ->route('certificateIssuers.index')
-            ->with('success',__('certificateIssuer')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('created'))
+            ->with('success',__('certificateIssuers.certificateIssuer')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.created'))
         ;
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($tagCategory): View
+    public function show($certificateIssuer): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificateIssuers_view')))
@@ -211,7 +210,13 @@ class CertificateIssuerController extends Controller
             return view('pages.denied');
         }
 
-        $object = CertificateIssuer::where('id','=',$tagCategory)->first();
+        $object = CertificateIssuer::where('id','=',$certificateIssuer)->first();
+        if(!$object){
+            return redirect()
+                ->route('certificateIssuers.index')
+                ->with('error',__('certificateIssuers.certificateIssuer')." ".__('system.not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.show')
             ->with('data',$object)
@@ -223,7 +228,7 @@ class CertificateIssuerController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($tagCategory): View
+    public function edit($certificateIssuer): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificateIssuers_update')))
@@ -235,7 +240,13 @@ class CertificateIssuerController extends Controller
             return view('pages.denied');
         }
 
-        $object = CertificateIssuer::where('id','=',$tagCategory)->first();
+        $object = CertificateIssuer::where('id','=',$certificateIssuer)->first();
+        if(!$object){
+            return redirect()
+                ->route('certificateIssuers.index')
+                ->with('error',__('certificateIssuers.certificateIssuer')." ".__('system.not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.edit')
             ->with('data',$object)
@@ -247,7 +258,7 @@ class CertificateIssuerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update($tagCategory, Request $request): RedirectResponse|View
+    public function update($certificateIssuer, Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificateIssuers_update')))
@@ -261,12 +272,18 @@ class CertificateIssuerController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
-        $object = CertificateIssuer::where('id', '=', $tagCategory)->first();
+        $object = CertificateIssuer::where('id', '=', $certificateIssuer)->first();
+        if(!$object){
+            return redirect()
+                ->route('certificateIssuers.index')
+                ->with('error',__('certificateIssuers.certificateIssuer')." ".__('system.not')." ".__('system.found'))
+            ;
+        }
 
         if (isset($request->name) && !empty($request->name)){
             $object->name = $request->name;
@@ -288,14 +305,14 @@ class CertificateIssuerController extends Controller
 
         return redirect()
             ->route('certificateIssuers.index')
-            ->with('success',__('certificateIssuer')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('updated'))
+            ->with('success',__('certificateIssuers.certificateIssuer')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.updated'))
         ;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($tagCategory): RedirectResponse|View
+    public function destroy($certificateIssuer): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificateIssuers_delete')))
@@ -307,23 +324,29 @@ class CertificateIssuerController extends Controller
             return view('pages.denied');
         }
 
-        $object = CertificateIssuer::where('id','=',$tagCategory)->first();
+        $object = CertificateIssuer::where('id','=',$certificateIssuer)->first();
+        if(!$object){
+            return redirect()
+                ->route('certificateIssuers.index')
+                ->with('error',__('certificateIssuers.certificateIssuer')." ".__('system.not')." ".__('system.found'))
+            ;
+        }
 
         $object->delete();
 
         return redirect()
             ->route('certificateIssuers.index')
-            ->with('success',__('certificateIssuer')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('deleted'))
+            ->with('success',__('certificateIssuers.certificateIssuer')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.deleted'))
         ;
     }
 
     /**
      * Permanently Remove the specified resource from storage.
      */
-    public function destroy_force($tagCategory): RedirectResponse|View
+    public function destroy_force($certificateIssuer): View|RedirectResponse
     {
         if(Auth::user()){
-            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificateIssuers_delete_force')))
+            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificateIssuers_deleteForce')))
             {
                 return view('pages.denied');
             }
@@ -333,22 +356,28 @@ class CertificateIssuerController extends Controller
         }
 
         $object = CertificateIssuer::onlyTrashed()
-            ->where('id','=',$tagCategory)
+            ->where('id','=',$certificateIssuer)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('certificateIssuers.deleted')
+                ->with('error',__('certificateIssuers.certificateIssuer')." ".__('system.not')." ".__('system.found'))
+            ;
+        }
 
         $object->forceDelete();
 
         return redirect()
             ->route('certificateIssuers.deleted')
-            ->with('success',__('certificateIssuer')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('forceDeleted'))
+            ->with('success',__('certificateIssuers.certificateIssuer')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.forceDeleted'))
         ;
     }
 
     /**
      * Restore the specified resource from storage.
      */
-    public function restore($tagCategory): RedirectResponse|View
+    public function restore($certificateIssuer): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificateIssuers_restore')))
@@ -361,15 +390,21 @@ class CertificateIssuerController extends Controller
         }
 
         $object = CertificateIssuer::onlyTrashed()
-            ->where('id','=',$tagCategory)
+            ->where('id','=',$certificateIssuer)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('certificateIssuers.deleted')
+                ->with('error',__('certificateIssuers.certificateIssuer')." ".__('system.not')." ".__('system.found'))
+            ;
+        }
 
         $object->restore();
 
         return redirect()
             ->route('certificateIssuers.deleted')
-            ->with('success',__('certificateIssuer')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('restored'))
+            ->with('success',__('certificateIssuers.certificateIssuer')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.restored'))
         ;
     }
 }

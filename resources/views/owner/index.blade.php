@@ -8,7 +8,7 @@
 @endsection
 
 @section('heading')
-    @lang('owner')
+    @lang('owner.owner')
 @endsection
 
 @section('content')

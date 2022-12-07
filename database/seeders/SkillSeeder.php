@@ -14,7 +14,7 @@ class SkillSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $beginner = SkillLevel::where('name','=','Beginner')->first()->id;
         $intermediate = SkillLevel::where('name','=','Intermediate')->first()->id;

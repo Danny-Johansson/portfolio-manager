@@ -15,7 +15,7 @@ class JobsearchStatusController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchStatuses_index')))
@@ -65,7 +65,7 @@ class JobsearchStatusController extends Controller
     /**
      * Display a listing of the deleted resource.
      */
-    public function deleted(Request $request): View
+    public function deleted(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchStatuses_deleted')))
@@ -115,7 +115,7 @@ class JobsearchStatusController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchStatuses_create')))
@@ -136,7 +136,7 @@ class JobsearchStatusController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse|View
+    public function store(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchStatuses_create')))
@@ -150,7 +150,7 @@ class JobsearchStatusController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
@@ -162,21 +162,21 @@ class JobsearchStatusController extends Controller
         }
         else{
             return back()
-                ->with('error',__('name')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.name')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
 
         return redirect()
             ->route('jobsearchStatuses.index')
-            ->with('success',__('jobsearchStatus')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('created'))
+            ->with('success',__('jobsearchStatus')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.created'))
         ;
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($jobsearchStatus): View
+    public function show($jobsearchStatus): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchStatuses_view')))
@@ -189,6 +189,12 @@ class JobsearchStatusController extends Controller
         }
 
         $object = JobsearchStatus::where('id','=',$jobsearchStatus)->first();
+        if(!$object){
+            return redirect()
+                ->route('jobsearchStatuses.index')
+                ->with('error',__('jobsearchStatus')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.show')
             ->with('data',$object)
@@ -200,7 +206,7 @@ class JobsearchStatusController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($jobsearchStatus): View
+    public function edit($jobsearchStatus): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchStatuses_update')))
@@ -213,6 +219,12 @@ class JobsearchStatusController extends Controller
         }
 
         $object = JobsearchStatus::where('id','=',$jobsearchStatus)->first();
+        if(!$object){
+            return redirect()
+                ->route('jobsearchStatuses.index')
+                ->with('error',__('jobsearchStatus')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.edit')
             ->with('data',$object)
@@ -224,7 +236,7 @@ class JobsearchStatusController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update($jobsearchStatus, Request $request): RedirectResponse|View
+    public function update($jobsearchStatus, Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchStatuses_update')))
@@ -238,12 +250,18 @@ class JobsearchStatusController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         $object = JobsearchStatus::where('id', '=', $jobsearchStatus)->first();
+        if(!$object){
+            return redirect()
+                ->route('jobsearchStatuses.index')
+                ->with('error',__('jobsearchStatus')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         if (isset($request->name) && !empty($request->name)){
             $object->name = $request->name;
@@ -253,14 +271,14 @@ class JobsearchStatusController extends Controller
 
         return redirect()
             ->route('jobsearchStatuses.index')
-            ->with('success',__('jobsearchStatus')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('updated'))
+            ->with('success',__('jobsearchStatus')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.updated'))
         ;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($jobsearchStatus): RedirectResponse|View
+    public function destroy($jobsearchStatus): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchStatuses_delete')))
@@ -273,22 +291,28 @@ class JobsearchStatusController extends Controller
         }
 
         $object = JobsearchStatus::where('id','=',$jobsearchStatus)->first();
+        if(!$object){
+            return redirect()
+                ->route('jobsearchStatuses.index')
+                ->with('error',__('jobsearchStatus')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->delete();
 
         return redirect()
             ->route('jobsearchStatuses.index')
-            ->with('success',__('jobsearchStatus')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('deleted'))
+            ->with('success',__('jobsearchStatus')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.deleted'))
         ;
     }
 
     /**
      * Permanently Remove the specified resource from storage.
      */
-    public function destroy_force($jobsearchStatus): RedirectResponse|View
+    public function destroy_force($jobsearchStatus): View|RedirectResponse
     {
         if(Auth::user()){
-            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchStatuses_delete_force')))
+            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchStatuses_deleteForce')))
             {
                 return view('pages.denied');
             }
@@ -301,19 +325,25 @@ class JobsearchStatusController extends Controller
             ->where('id','=',$jobsearchStatus)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('jobsearchStatuses.deleted')
+                ->with('error',__('jobsearchStatus')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->forceDelete();
 
         return redirect()
             ->route('jobsearchStatuses.deleted')
-            ->with('success',__('jobsearchStatus')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('forceDeleted'))
+            ->with('success',__('jobsearchStatus')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.forceDeleted'))
         ;
     }
 
     /**
      * Restore the specified resource from storage.
      */
-    public function restore($jobsearchStatus): RedirectResponse|View
+    public function restore($jobsearchStatus): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchStatuses_restore')))
@@ -329,12 +359,18 @@ class JobsearchStatusController extends Controller
             ->where('id','=',$jobsearchStatus)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('jobsearchStatuses.index')
+                ->with('error',__('jobsearchStatus')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->restore();
 
         return redirect()
             ->route('jobsearchStatuses.deleted')
-            ->with('success',__('jobsearchStatus')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('restored'))
+            ->with('success',__('jobsearchStatus')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.restored'))
         ;
     }
 

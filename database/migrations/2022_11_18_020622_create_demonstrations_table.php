@@ -17,9 +17,8 @@ return new class extends Migration
         Schema::create('demonstrations', function (Blueprint $table) {
             $table->id();
 
-            $table->string('name');
+            $table->string('name')->unique();
             $table->string('file');
-            $table->boolean('strict');
 
             $table->foreignId('demonstration_type_id')
                 ->constrained()

@@ -11,8 +11,10 @@
             id="email"
             class="form-control"
             placeholder="@lang('email@domain.tld')"
-            required
-            value="@if(old('email')){{old('email')}}@elseif(isset($data->email)){{$data->email}}@endif"
+            @if(isset($required))
+                required
+            @endif
+            value="@if(old('email')){{old('email')}}@elseif(config('system.demo_mode')){{config('system.email')}}@elseif(isset($data->email)){{$data->email}}@endif"
         >
     </div>
 </div>

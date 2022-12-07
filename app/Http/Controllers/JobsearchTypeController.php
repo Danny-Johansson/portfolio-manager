@@ -15,7 +15,7 @@ class JobsearchTypeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchTypes_index')))
@@ -64,7 +64,7 @@ class JobsearchTypeController extends Controller
     /**
      * Display a listing of the deleted resource.
      */
-    public function deleted(Request $request): View
+    public function deleted(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchTypes_deleted')))
@@ -114,7 +114,7 @@ class JobsearchTypeController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchTypes_create')))
@@ -135,7 +135,7 @@ class JobsearchTypeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse|View
+    public function store(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchTypes_create')))
@@ -149,7 +149,7 @@ class JobsearchTypeController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
@@ -161,23 +161,29 @@ class JobsearchTypeController extends Controller
         }
         else{
             return back()
-                ->with('error',__('name')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.name')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
 
         return redirect()
             ->route('jobsearchTypes.index')
-            ->with('success',__('jobsearchType')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('created'))
+            ->with('success',__('jobsearchType')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.created'))
         ;
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($jobsearchType): View
+    public function show($jobsearchType): View|RedirectResponse
     {
         $object = JobsearchType::where('id','=',$jobsearchType)->first();
+        if(!$object){
+            return redirect()
+                ->route('jobsearchTypes.index')
+                ->with('error',__('jobsearchType')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.show')
             ->with('data',$object)
@@ -189,7 +195,7 @@ class JobsearchTypeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($jobsearchType): View
+    public function edit($jobsearchType): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchTypes_update')))
@@ -202,6 +208,12 @@ class JobsearchTypeController extends Controller
         }
 
         $object = JobsearchType::where('id','=',$jobsearchType)->first();
+        if(!$object){
+            return redirect()
+                ->route('jobsearchTypes.index')
+                ->with('error',__('jobsearchType')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.edit')
             ->with('data',$object)
@@ -213,7 +225,7 @@ class JobsearchTypeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update($jobsearchType, Request $request): RedirectResponse|View
+    public function update($jobsearchType, Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchTypes_update')))
@@ -227,12 +239,18 @@ class JobsearchTypeController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         $object = JobsearchType::where('id', '=', $jobsearchType)->first();
+        if(!$object){
+            return redirect()
+                ->route('jobsearchTypes.index')
+                ->with('error',__('jobsearchType')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         if (isset($request->name) && !empty($request->name)){
             $object->name = $request->name;
@@ -242,14 +260,14 @@ class JobsearchTypeController extends Controller
 
         return redirect()
             ->route('jobsearchTypes.index')
-            ->with('success',__('jobsearchType')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('updated'))
+            ->with('success',__('jobsearchType')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.updated'))
         ;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($jobsearchType): RedirectResponse|View
+    public function destroy($jobsearchType): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchTypes_delete')))
@@ -262,22 +280,28 @@ class JobsearchTypeController extends Controller
         }
 
         $object = JobsearchType::where('id','=',$jobsearchType)->first();
+        if(!$object){
+            return redirect()
+                ->route('jobsearchTypes.index')
+                ->with('error',__('jobsearchType')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->delete();
 
         return redirect()
             ->route('jobsearchTypes.index')
-            ->with('success',__('jobsearchType')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('deleted'))
+            ->with('success',__('jobsearchType')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.deleted'))
         ;
     }
 
     /**
      * Permanently Remove the specified resource from storage.
      */
-    public function destroy_force($jobsearchType): RedirectResponse|View
+    public function destroy_force($jobsearchType): View|RedirectResponse
     {
         if(Auth::user()){
-            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchTypes_delete_force')))
+            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchTypes_deleteForce')))
             {
                 return view('pages.denied');
             }
@@ -290,19 +314,25 @@ class JobsearchTypeController extends Controller
             ->where('id','=',$jobsearchType)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('jobsearchTypes.deleted')
+                ->with('error',__('jobsearchType')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->forceDelete();
 
         return redirect()
             ->route('jobsearchTypes.deleted')
-            ->with('success',__('jobsearchType')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('forceDeleted'))
+            ->with('success',__('jobsearchType')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.forceDeleted'))
         ;
     }
 
     /**
      * Restore the specified resource from storage.
      */
-    public function restore($jobsearchType): RedirectResponse|View
+    public function restore($jobsearchType): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','jobsearchTypes_restore')))
@@ -318,12 +348,18 @@ class JobsearchTypeController extends Controller
             ->where('id','=',$jobsearchType)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('jobsearchTypes.deleted')
+                ->with('error',__('jobsearchType')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->restore();
 
         return redirect()
             ->route('jobsearchTypes.deleted')
-            ->with('success',__('jobsearchType')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('restored'))
+            ->with('success',__('jobsearchType')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.restored'))
         ;
     }
 

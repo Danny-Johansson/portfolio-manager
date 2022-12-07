@@ -4,7 +4,7 @@
 @endsection
 
 @section('heading')
-    @lang('create') @lang($singular)
+    @lang('system.create') @lang(request()->segment(1).".".$singular)
 @endsection
 
 @section('content')

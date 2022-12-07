@@ -1,0 +1,6 @@
+@include('partials.page_elements.data.data',['type' => 'inputs','data' => $object->name, 'col' => 'auto'])
+@include('partials.page_elements.data.link',['label' => 'repo_url','data' =>$object->repo_url, 'col' => 'auto'])
+@include('partials.page_elements.data.link',['label' => 'demo_url','data' =>$object->demo_url, 'col' => 'auto'])
+@include('partials.page_elements.data.list',['type' => 'features','data' =>$object->features, 'style' => '', 'col' => 'auto'])
+@include('partials.page_elements.data.list',['type' => 'tags','data' =>$object->tags, 'style' => 'tags', 'col' => 'auto'])
+@include('partials.page_elements.data.data',['type' => 'inputs','data' => $object->note,'multiline' => true, 'col' => '1'])

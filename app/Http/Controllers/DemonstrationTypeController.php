@@ -16,7 +16,7 @@ class DemonstrationTypeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','demonstrationTypes_index')))
@@ -65,7 +65,7 @@ class DemonstrationTypeController extends Controller
     /**
      * Display a listing of the deleted resource.
      */
-    public function deleted(Request $request): View
+    public function deleted(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','demonstrationTypes_deleted')))
@@ -114,7 +114,7 @@ class DemonstrationTypeController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','demonstrationTypes_create')))
@@ -135,7 +135,7 @@ class DemonstrationTypeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse|View
+    public function store(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','demonstrationTypes_create')))
@@ -149,7 +149,7 @@ class DemonstrationTypeController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
@@ -161,21 +161,21 @@ class DemonstrationTypeController extends Controller
         }
         else{
             return back()
-                ->with('error',__('name')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.name')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
 
         return redirect()
             ->route('demonstrationTypes.index')
-            ->with('success',__('demonstrationType')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('created'))
+            ->with('success',__('demonstrationType')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.created'))
         ;
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($demonstrationType): View
+    public function show($demonstrationType): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','demonstrationTypes_view')))
@@ -199,7 +199,7 @@ class DemonstrationTypeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($demonstrationType): View
+    public function edit($demonstrationType): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','demonstrationTypes_update')))
@@ -212,6 +212,12 @@ class DemonstrationTypeController extends Controller
         }
 
         $object = DemonstrationType::where('id','=',$demonstrationType)->first();
+        if(!$object){
+            return redirect()
+                ->route('demonstrationTypes.index')
+                ->with('error',__('demonstrationType')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.edit')
             ->with('data',$object)
@@ -223,7 +229,7 @@ class DemonstrationTypeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update($demonstrationType, Request $request): RedirectResponse|View
+    public function update($demonstrationType, Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','demonstrationTypes_update')))
@@ -237,12 +243,18 @@ class DemonstrationTypeController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
-        $object = DemonstrationType::where('id', '=', $demonstrationType)->first();
+        $object = DemonstrationType::where('id', '=', $demonstrationType)->first();;
+        if(!$object){
+            return redirect()
+                ->route('demonstrationTypes.index')
+                ->with('error',__('demonstrationType')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         if (isset($request->name) && !empty($request->name)){
             $object->name = $request->name;
@@ -252,14 +264,14 @@ class DemonstrationTypeController extends Controller
 
         return redirect()
             ->route('demonstrationTypes.index')
-            ->with('success',__('demonstrationType')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('updated'))
+            ->with('success',__('demonstrationType')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.updated'))
         ;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($demonstrationType): RedirectResponse|View
+    public function destroy($demonstrationType): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','demonstrationTypes_delete')))
@@ -272,22 +284,28 @@ class DemonstrationTypeController extends Controller
         }
 
         $object = DemonstrationType::where('id','=',$demonstrationType)->first();
+        if(!$object){
+            return redirect()
+                ->route('demonstrationTypes.index')
+                ->with('error',__('demonstrationType')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->delete();
 
         return redirect()
             ->route('demonstrationTypes.index')
-            ->with('success',__('demonstrationType')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('deleted'))
+            ->with('success',__('demonstrationType')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.deleted'))
         ;
     }
 
     /**
      * Permanently Remove the specified resource from storage.
      */
-    public function destroy_force($demonstrationType): RedirectResponse|View
+    public function destroy_force($demonstrationType): View|RedirectResponse
     {
         if(Auth::user()){
-            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','demonstrationTypes_delete_force')))
+            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','demonstrationTypes_deleteForce')))
             {
                 return view('pages.denied');
             }
@@ -300,19 +318,25 @@ class DemonstrationTypeController extends Controller
             ->where('id','=',$demonstrationType)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('demonstrationTypes.deleted')
+                ->with('error',__('demonstrationType')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->forceDelete();
 
         return redirect()
             ->route('demonstrationTypes.deleted')
-            ->with('success',__('demonstrationType')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('forceDeleted'))
+            ->with('success',__('demonstrationType')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.forceDeleted'))
         ;
     }
 
     /**
      * Restore the specified resource from storage.
      */
-    public function restore($demonstrationType): RedirectResponse|View
+    public function restore($demonstrationType): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','demonstrationTypes_restore')))
@@ -328,12 +352,18 @@ class DemonstrationTypeController extends Controller
             ->where('id','=',$demonstrationType)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('demonstrationTypes.deleted')
+                ->with('error',__('demonstrationType')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->restore();
 
         return redirect()
             ->route('demonstrationTypes.deleted')
-            ->with('success',__('demonstrationType')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('restored'))
+            ->with('success',__('demonstrationType')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.restored'))
         ;
     }
 

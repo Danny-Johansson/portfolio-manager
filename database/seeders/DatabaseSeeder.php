@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use App\Models\JobsearchType;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,7 +12,7 @@ class DatabaseSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $this->call([
             PermissionSeeder::class,
@@ -21,8 +20,10 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             TagCategorySeeder::class,
             TagSeeder::class,
+            FeatureSeeder::class,
             ProjectSeeder::class,
             DemonstrationTypeSeeder::class,
+            DemonstrationModeSeeder::class,
             DemonstrationSeeder::class,
             OwnerSeeder::class,
             SkillLevelSeeder::class,

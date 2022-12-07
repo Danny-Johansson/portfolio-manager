@@ -13,14 +13,23 @@ class DemonstrationTypeSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
         $items = [
             [
                 'name' => 'Layout',
             ],
             [
-                'name' => 'Animation',
+                'name' => 'Colorscheme',
+            ],
+            [
+                'name' => 'CSS Animation',
+            ],
+            [
+                'name' => 'Art',
+            ],
+            [
+                'name' => 'Component',
             ],
         ];
         foreach ($items as $item) {

@@ -4,9 +4,11 @@ use App\Http\Controllers\ArtisanController;
 use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\CertificateIssuerController;
 use App\Http\Controllers\DemonstrationController;
+use App\Http\Controllers\DemonstrationModeController;
 use App\Http\Controllers\DemonstrationTypeController;
 use App\Http\Controllers\ExperienceController;
 use App\Http\Controllers\ExperienceTypeController;
+use App\Http\Controllers\FeatureController;
 use App\Http\Controllers\JobsearchController;
 use App\Http\Controllers\JobsearchStatusController;
 use App\Http\Controllers\JobsearchTypeController;
@@ -53,17 +55,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/projects/deleted', [ProjectController::class,'deleted'])->name('projects.deleted');
     Route::get('/projects/{project}/restore', [ProjectController::class,'restore'])->name('projects.restore');
     Route::delete('/projects/{project}/forceDelete', [ProjectController::class,'destroy_force'])->name('projects.forceDelete');
+    Route::resource('projects', ProjectController::class)->except('index');
 });
-Route::resource('projects', ProjectController::class);
+Route::resource('projects', ProjectController::class)->only('index');
 
 // Demonstrations
+Route::get('/demonstrations/{demonstration}/demo/{mode}', [DemonstrationController::class, 'demo'])->name('demo');
 Route::middleware(['auth'])->group(function () {
     Route::get('/demonstrations/deleted', [DemonstrationController::class,'deleted'])->name('demonstrations.deleted');
     Route::get('/demonstrations/{demonstration}/restore', [DemonstrationController::class,'restore'])->name('demonstrations.restore');
     Route::delete('/demonstrations/{demonstration}/forceDelete', [DemonstrationController::class,'destroy_force'])->name('demonstrations.forceDelete');
+    Route::get('/demonstrations/{demonstration}/file', [DemonstrationController::class,'file_form'])->name('demonstrations.file.form');
+    Route::put('/demonstrations/{demonstration}/file', [DemonstrationController::class,'file_submit'])->name('demonstrations.file.submit');
+
+    Route::resource('demonstrations', DemonstrationController::class)->except('index');
 });
-Route::get('/demonstrations/{demonstration}/demo', [DemonstrationController::class, 'demo'])->name('demo');
-Route::resource('demonstrations', DemonstrationController::class);
+Route::resource('demonstrations', DemonstrationController::class)->only('index');
 
 // Job Searches
 Route::middleware(['auth'])->group(function () {
@@ -106,6 +113,12 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/demonstrationTypes/{projectFeature}/forceDelete', [DemonstrationTypeController::class,'destroy_force'])->name('demonstrationTypes.forceDelete');
     Route::resource('demonstrationTypes', DemonstrationTypeController::class);
 
+    // Demonstration Modes
+    Route::get('/demonstrationModes/deleted', [DemonstrationModeController::class,'deleted'])->name('demonstrationModes.deleted');
+    Route::get('/demonstrationModes/{demonstrationMode}/restore', [DemonstrationModeController::class,'restore'])->name('demonstrationModes.restore');
+    Route::delete('/demonstrationModes/{demonstrationMode}/forceDelete', [DemonstrationModeController::class,'destroy_force'])->name('demonstrationModes.forceDelete');
+    Route::resource('demonstrationModes', DemonstrationModeController::class);
+
     // Tag Categories
     Route::get('/tagCategories/deleted', [TagCategoryController::class,'deleted'])->name('tagCategories.deleted');
     Route::get('/tagCategories/{tagCategory}/restore', [TagCategoryController::class,'restore'])->name('tagCategories.restore');
@@ -117,6 +130,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/tags/{tag}/restore', [TagController::class,'restore'])->name('tags.restore');
     Route::delete('/tags/{tag}/forceDelete', [TagController::class,'destroy_force'])->name('tags.forceDelete');
     Route::resource('tags',TagController::class);
+
+    // Features
+    Route::get('/features/deleted', [FeatureController::class,'deleted'])->name('features.deleted');
+    Route::get('/features/{feature}/restore', [FeatureController::class,'restore'])->name('features.restore');
+    Route::delete('/features/{feature}/forceDelete', [FeatureController::class,'destroy_force'])->name('features.forceDelete');
+    Route::resource('features',FeatureController::class);
 
     /*
      * Resume Related
@@ -173,8 +192,8 @@ Route::middleware(['auth'])->group(function () {
 
     // Certificate Issuers
     Route::get('/certificateIssuers/deleted', [CertificateIssuerController::class,'deleted'])->name('certificateIssuers.deleted');
-    Route::get('/certificateIssuers/{experienceType}/restore', [CertificateIssuerController::class,'restore'])->name('certificateIssuers.restore');
-    Route::delete('/certificateIssuers/{experienceType}/forceDelete', [CertificateIssuerController::class,'destroy_force'])->name('certificateIssuers.forceDelete');
+    Route::get('/certificateIssuers/{certificateIssuer}/restore', [CertificateIssuerController::class,'restore'])->name('certificateIssuers.restore');
+    Route::delete('/certificateIssuers/{certificateIssuer}/forceDelete', [CertificateIssuerController::class,'destroy_force'])->name('certificateIssuers.forceDelete');
     Route::resource('certificateIssuers', CertificateIssuerController::class);
 
     // Certificates

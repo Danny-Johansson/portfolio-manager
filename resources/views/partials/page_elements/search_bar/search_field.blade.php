@@ -1,6 +1,6 @@
 <input type="text"
        name="search_term"
-       placeholder="@lang('search')"
+       placeholder="@lang('system.search')"
        class="form-control col-3 me-2"
        value="<?= @$_GET["search_term"] ?? ''?>"
 >

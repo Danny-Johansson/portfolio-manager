@@ -13,8 +13,6 @@ class JobsearchTypePolicy
 
     /**
      * Create a new policy instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -104,7 +102,7 @@ class JobsearchTypePolicy
      */
     public function delete_force(): Response
     {
-        return Auth::user()->role->permissions->contains(Permission::firstWhere('name','=','jobsearchTypes_delete_force'))
+        return Auth::user()->role->permissions->contains(Permission::firstWhere('name','=','jobsearchTypes_deleteForce'))
             ? Response::allow()
             : Response::deny('you are not the chosen one')
         ;

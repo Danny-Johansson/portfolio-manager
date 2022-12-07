@@ -1,0 +1,5 @@
+@include('partials.page_elements.data.label',['type' => 'inputs','data' => 'name'])
+@include('partials.page_elements.data.label',['type' => 'languages','data' => 'read'])
+@include('partials.page_elements.data.label',['type' => 'languages','data' => 'write'])
+@include('partials.page_elements.data.label',['type' => 'languages','data' => 'speak'])
+@include('partials.page_elements.data.label',['type' => 'languages','data' => 'understand'])

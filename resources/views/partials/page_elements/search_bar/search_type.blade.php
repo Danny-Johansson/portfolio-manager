@@ -5,7 +5,7 @@
             value="{{$search_type['value']}}"
             @if(isset($_GET['search_type']) && $_GET['search_type'] == $search_type['value']) selected @endif
         >
-            @lang($search_type['name'])
+            @lang("inputs.".$search_type['name'])
         </option>
     @endforeach
 </select>

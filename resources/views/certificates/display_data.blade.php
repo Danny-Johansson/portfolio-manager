@@ -1,0 +1,6 @@
+@include('partials.page_elements.data.data',['type' => 'certificates','data' => $object->name, 'col' => 'auto'])
+@include('partials.page_elements.data.data',['type' => 'certificateIssuers','data' => $object->issuer->name, 'col' => 'auto'])
+@include('partials.page_elements.data.date',['format' => 'M Y','data' => $object->earn_date, 'col' => 'auto'])
+@include('partials.page_elements.data.date',['format' => 'M Y','data' => $object->expire_date, 'col' => 'auto'])
+@include('partials.page_elements.data.link',['data' => $object->file,'label' => 'file', 'col' => 'auto'])
+@include('partials.page_elements.data.data',['type' => 'certificates','data' => $object->note, 'col' => 'auto'])

@@ -101,7 +101,7 @@ class ProjectPolicy
      */
     public function delete_force(): Response
     {
-        return Auth::user()->role->permissions->contains(Permission::firstWhere('name','=','projects_delete_force'))
+        return Auth::user()->role->permissions->contains(Permission::firstWhere('name','=','projects_deleteForce'))
             ? Response::allow()
             : Response::deny('you are not the chosen one')
         ;

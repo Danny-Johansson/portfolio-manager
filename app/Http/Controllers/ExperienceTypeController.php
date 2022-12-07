@@ -15,7 +15,7 @@ class ExperienceTypeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experienceTypes_index')))
@@ -64,7 +64,7 @@ class ExperienceTypeController extends Controller
     /**
      * Display a listing of the deleted resource.
      */
-    public function deleted(Request $request): View
+    public function deleted(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experienceTypes_deleted')))
@@ -113,7 +113,7 @@ class ExperienceTypeController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experienceTypes_create')))
@@ -134,7 +134,7 @@ class ExperienceTypeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse|View
+    public function store(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experienceTypes_create')))
@@ -148,7 +148,7 @@ class ExperienceTypeController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
@@ -160,21 +160,21 @@ class ExperienceTypeController extends Controller
         }
         else{
             return back()
-                ->with('error',__('name')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.name')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
 
         return redirect()
             ->route('experienceTypes.index')
-            ->with('success',__('experienceType')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('created'))
+            ->with('success',__('experienceType')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.created'))
         ;
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($experienceType): View
+    public function show($experienceType): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experienceTypes_view')))
@@ -187,6 +187,12 @@ class ExperienceTypeController extends Controller
         }
 
         $object = ExperienceType::where('id','=',$experienceType)->first();
+        if(!$object){
+            return redirect()
+                ->route('experienceTypes.index')
+                ->with('error',__('experienceType')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.show')
             ->with('data',$object)
@@ -198,7 +204,7 @@ class ExperienceTypeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($experienceType): View
+    public function edit($experienceType): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experienceTypes_update')))
@@ -211,6 +217,12 @@ class ExperienceTypeController extends Controller
         }
 
         $object = ExperienceType::where('id','=',$experienceType)->first();
+        if(!$object){
+            return redirect()
+                ->route('experienceTypes.index')
+                ->with('error',__('experienceType')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.edit')
             ->with('data',$object)
@@ -222,7 +234,7 @@ class ExperienceTypeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update($experienceType, Request $request): RedirectResponse|View
+    public function update($experienceType, Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experienceTypes_update')))
@@ -236,12 +248,18 @@ class ExperienceTypeController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         $object = ExperienceType::where('id', '=', $experienceType)->first();
+        if(!$object){
+            return redirect()
+                ->route('experienceTypes.index')
+                ->with('error',__('experienceType')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         if (isset($request->name) && !empty($request->name)){
             $object->name = $request->name;
@@ -251,14 +269,14 @@ class ExperienceTypeController extends Controller
 
         return redirect()
             ->route('experienceTypes.index')
-            ->with('success',__('experienceType')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('updated'))
+            ->with('success',__('experienceType')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.updated'))
         ;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($experienceType): RedirectResponse|View
+    public function destroy($experienceType): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experienceTypes_delete')))
@@ -271,22 +289,28 @@ class ExperienceTypeController extends Controller
         }
 
         $object = ExperienceType::where('id','=',$experienceType)->first();
+        if(!$object){
+            return redirect()
+                ->route('experienceTypes.index')
+                ->with('error',__('experienceType')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->delete();
 
         return redirect()
             ->route('experienceTypes.index')
-            ->with('success',__('experienceType')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('deleted'))
+            ->with('success',__('experienceType')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.deleted'))
         ;
     }
 
     /**
      * Permanently Remove the specified resource from storage.
      */
-    public function destroy_force($experienceType): RedirectResponse|View
+    public function destroy_force($experienceType): View|RedirectResponse
     {
         if(Auth::user()){
-            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experienceTypes_delete_force')))
+            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experienceTypes_deleteForce')))
             {
                 return view('pages.denied');
             }
@@ -299,19 +323,25 @@ class ExperienceTypeController extends Controller
             ->where('id','=',$experienceType)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('experienceTypes.deleted')
+                ->with('error',__('experienceType')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->forceDelete();
 
         return redirect()
             ->route('experienceTypes.deleted')
-            ->with('success',__('experienceType')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('forceDeleted'))
+            ->with('success',__('experienceType')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.forceDeleted'))
         ;
     }
 
     /**
      * Restore the specified resource from storage.
      */
-    public function restore($experienceType): RedirectResponse|View
+    public function restore($experienceType): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experienceTypes_restore')))
@@ -327,12 +357,18 @@ class ExperienceTypeController extends Controller
             ->where('id','=',$experienceType)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('experienceTypes.deleted')
+                ->with('error',__('experienceType')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->restore();
 
         return redirect()
             ->route('experienceTypes.deleted')
-            ->with('success',__('experienceType')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('restored'))
+            ->with('success',__('experienceType')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.restored'))
         ;
     }
 

@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Certificate;
 use App\Models\CertificateIssuer;
 use App\Models\Permission;
-use App\Models\Social;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,10 +17,10 @@ class CertificateController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
-            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificates_index')))
+            if(!Auth::user()->role->permissions->contains(Permission::where('name', '=','certificates_index')->first()))
             {
                 return view('pages.denied');
             }
@@ -39,17 +38,15 @@ class CertificateController extends Controller
         $search_types[] = array("value" => "name", "name" => "name");
 
         if($search_term != ""){
-            switch ($search_type){
-                case "name":
-                    switch($search_compare){
-                        case("="):
-                            $data = Certificate::where('name','=',$search_term)->paginate($perPage);
-                            break;
-                        default:
-                            $data = Certificate::where('name','like','%' . $search_term . '%')->paginate($perPage);
-                            break;
-                    }
-                    break;
+            if ($search_type == "name") {
+                switch ($search_compare) {
+                    case("="):
+                        $data = Certificate::where('name', '=', $search_term)->paginate($perPage);
+                        break;
+                    default:
+                        $data = Certificate::where('name', 'like', '%' . $search_term . '%')->paginate($perPage);
+                        break;
+                }
             }
         }
         else{
@@ -67,7 +64,7 @@ class CertificateController extends Controller
     /**
      * Display a listing of the deleted resource.
      */
-    public function deleted(Request $request): View
+    public function deleted(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificates_deleted')))
@@ -117,7 +114,7 @@ class CertificateController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificates_create')))
@@ -141,7 +138,7 @@ class CertificateController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse|View
+    public function store(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificates_create')))
@@ -155,21 +152,21 @@ class CertificateController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         if(config('system.demo_mode') AND Str::contains($request->note,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('note')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('note')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
-        if (!isset($request->name) && !empty($request->name)){
+        if (isset($request->name) && empty($request->name)){
             return back()
-                ->with('error',__('name')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.name')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
@@ -179,16 +176,11 @@ class CertificateController extends Controller
         $file = $request->file('file');
         $destinationPath = 'files';
         $original_name = $file->getClientOriginalName();
-        $orginal_parts = explode(".",$original_name);
-        $extension = $orginal_parts[1];
+        $original_parts = explode(".",$original_name);
+        $extension = $original_parts[1];
         $file->move($destinationPath,$name_filtered.".".$extension);
 
-        if(isset($request->note)){
-            $note = $request->note;
-        }
-        else{
-            $note = Null;
-        }
+        $note = $request->note ?? Null;
 
         $object = Certificate::create([
             'name' => $request->name,
@@ -202,14 +194,14 @@ class CertificateController extends Controller
 
         return redirect()
             ->route('certificates.index')
-            ->with('success',__('certificate')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('created'))
+            ->with('success',__('certificate')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.created'))
         ;
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($tag): View
+    public function show($certificate): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificates_view')))
@@ -221,7 +213,14 @@ class CertificateController extends Controller
             return view('pages.denied');
         }
 
-        $object = Certificate::where('id','=',$tag)->first();
+        $object = Certificate::where('id','=',$certificate)->first();
+        if(!$object){
+            $className = get_class($object);
+            return back()
+                ->with('error',__($className)." ".__('system.cannot')." ".__('system.beBlank'))
+                ->withInput()
+            ;
+        }
 
         return view('general.show')
             ->with('data',$object)
@@ -233,7 +232,7 @@ class CertificateController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($tag): View
+    public function edit($certificate): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificates_update')))
@@ -245,7 +244,14 @@ class CertificateController extends Controller
             return view('pages.denied');
         }
 
-        $object = Certificate::where('id','=',$tag)->first();
+        $object = Certificate::where('id','=',$certificate)->first();
+        if(!$object){
+            return redirect()
+                ->route('certificates.index')
+                ->with('error',__('certificate')." ".__('not')." ".__('system.found'))
+            ;
+        }
+
         $issuers = CertificateIssuer::all();
 
         return view('general.edit')
@@ -259,7 +265,7 @@ class CertificateController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update($certificate, Request $request): RedirectResponse|View
+    public function update($certificate, Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificates_update')))
@@ -273,12 +279,18 @@ class CertificateController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         $object = Certificate::where('id', '=', $certificate)->first();
+        if(!$object){
+            return redirect()
+                ->route('certificates.index')
+                ->with('error',__('certificate')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         if (isset($request->name) && !empty($request->name)){
             $object->name = $request->name;
@@ -317,14 +329,14 @@ class CertificateController extends Controller
 
         return redirect()
             ->route('certificates.index')
-            ->with('success',__('certificate')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('updated'))
+            ->with('success',__('certificate')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.updated'))
         ;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($tag): RedirectResponse|View
+    public function destroy($certificate): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificates_delete')))
@@ -336,23 +348,29 @@ class CertificateController extends Controller
             return view('pages.denied');
         }
 
-        $object = Certificate::where('id','=',$tag)->first();
+        $object = Certificate::where('id','=',$certificate)->first();
+        if(!$object){
+            return redirect()
+                ->route('certificates.index')
+                ->with('error',__('certificate')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->delete();
 
         return redirect()
             ->route('certificates.index')
-            ->with('success',__('certificate')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('deleted'))
+            ->with('success',__('certificate')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.deleted'))
         ;
     }
 
     /**
      * Permanently Remove the specified resource from storage.
      */
-    public function destroy_force($tag): RedirectResponse|View
+    public function destroy_force($certificate): View|RedirectResponse
     {
         if(Auth::user()){
-            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificates_delete_force')))
+            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificates_deleteForce')))
             {
                 return view('pages.denied');
             }
@@ -362,9 +380,16 @@ class CertificateController extends Controller
         }
 
         $object = Certificate::onlyTrashed()
-            ->where('id','=',$tag)
+            ->where('id','=',$certificate)
             ->first()
         ;
+
+        if(!$object){
+            return redirect()
+                ->route('certificates.deleted')
+                ->with('error',__('certificate')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         File::delete($object->file);
 
@@ -372,14 +397,14 @@ class CertificateController extends Controller
 
         return redirect()
             ->route('certificates.deleted')
-            ->with('success',__('certificate')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('forceDeleted'))
+            ->with('success',__('certificate')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.forceDeleted'))
         ;
     }
 
     /**
      * Restore the specified resource from storage.
      */
-    public function restore($tag): RedirectResponse|View
+    public function restore($certificate): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','certificates_restore')))
@@ -392,22 +417,28 @@ class CertificateController extends Controller
         }
 
         $object = Certificate::onlyTrashed()
-            ->where('id','=',$tag)
+            ->where('id','=',$certificate)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('certificates.deleted')
+                ->with('error',__('certificate')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->restore();
 
         return redirect()
             ->route('certificates.deleted')
-            ->with('success',__('certificate')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('restored'))
+            ->with('success',__('certificate')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.restored'))
         ;
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function file_form($certificate, Request $request): RedirectResponse|View
+    public function file_form($certificate): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','socials_update')))
@@ -420,6 +451,12 @@ class CertificateController extends Controller
         }
 
         $object = Certificate::where('id','=',$certificate)->first();
+        if(!$object){
+            return redirect()
+                ->route('certificates.index')
+                ->with('error',__('certificate')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('certificates.file')
             ->with('data',$object)
@@ -431,7 +468,7 @@ class CertificateController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function file_submit($certificate, Request $request): RedirectResponse|View
+    public function file_submit($certificate, Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','socials_update')))
@@ -444,6 +481,12 @@ class CertificateController extends Controller
         }
 
         $object = Certificate::where('id','=',$certificate)->first();
+        if(!$object){
+            return redirect()
+                ->route('certificates.index')
+                ->with('error',__('certificate')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         File::delete($object->file);
 
@@ -452,13 +495,13 @@ class CertificateController extends Controller
         $file = $request->file('file');
         $destinationPath = 'files';
         $original_name = $file->getClientOriginalName();
-        $orginal_parts = explode(".",$original_name);
-        $extension = $orginal_parts[1];
+        $original_parts = explode(".",$original_name);
+        $extension = $original_parts[1];
         $file->move($destinationPath,$name_filtered.".".$extension);
 
         return redirect()
             ->route('certificates.index')
-            ->with('success',__('certificate')." ".__('file')." ".__('updated'))
+            ->with('success',__('certificate')." ".__('file')." ".__('system.updated'))
         ;
     }
 }

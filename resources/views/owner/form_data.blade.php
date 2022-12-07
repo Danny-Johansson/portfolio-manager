@@ -1,6 +1,6 @@
-@include('partials.inputs.first_name')
-@include('partials.inputs.initials')
-@include('partials.inputs.last_name')
+@include('partials.inputs.string',['name' => 'first_name','required' => true])
+@include('partials.inputs.string',['name' => 'initials'])
+@include('partials.inputs.string',['name' => 'last_name','required' => true])
 
 @include('partials.page_elements.divider')
 
@@ -13,12 +13,12 @@
 
 @include('partials.page_elements.divider')
 
-@include('partials.inputs.country')
-@include('partials.inputs.city')
-@include('partials.inputs.zipcode')
-@include('partials.inputs.street_name')
-@include('partials.inputs.street_number')
+@include('partials.inputs.string',['name' => 'country'])
+@include('partials.inputs.string',['name' => 'city'])
+@include('partials.inputs.string',['name' => 'zipcode'])
+@include('partials.inputs.string',['name' => 'street_name'])
+@include('partials.inputs.string',['name' => 'street_number'])
 
 @include('partials.page_elements.divider')
 
-@include('partials.inputs.license')
+@include('partials.inputs.checkbox',['name' => 'license'])

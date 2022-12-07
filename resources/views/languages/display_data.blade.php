@@ -1,0 +1,5 @@
+@include('partials.page_elements.data.data',['type' => 'languages','data' => $object->name, 'col' => 'auto'])
+@include('partials.page_elements.data.data',['type' => 'languageLevels','data' => $object->read_rel->name, 'col' => 'auto'])
+@include('partials.page_elements.data.data',['type' => 'languageLevels','data' => $object->write_rel->name, 'col' => 'auto'])
+@include('partials.page_elements.data.data',['type' => 'languageLevels','data' => $object->speak_rel->name, 'col' => 'auto'])
+@include('partials.page_elements.data.data',['type' => 'languageLevels','data' => $object->understand_rel->name, 'col' => 'auto'])

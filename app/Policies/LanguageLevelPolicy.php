@@ -88,7 +88,7 @@ class LanguageLevelPolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore()
+    public function restore(): Response
     {
         return Auth::user()->role->permissions->contains(Permission::firstWhere('name','=','languageLevels_restore'))
             ? Response::allow()
@@ -99,9 +99,9 @@ class LanguageLevelPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function delete_force()
+    public function delete_force(): Response
     {
-        return Auth::user()->role->permissions->contains(Permission::firstWhere('name','=','languageLevels_delete_force'))
+        return Auth::user()->role->permissions->contains(Permission::firstWhere('name','=','languageLevels_deleteForce'))
             ? Response::allow()
             : Response::deny('you are not the chosen one')
         ;

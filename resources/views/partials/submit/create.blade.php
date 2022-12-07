@@ -4,7 +4,7 @@
     </div>
     <div class="col">
         <button type="submit" class="btn btn-success text-capitalize">
-            @lang('create') @lang($singular)
+            @lang('system.create') @lang(request()->segment(1).".".$singular)
         </button>
     </div>
 </div>

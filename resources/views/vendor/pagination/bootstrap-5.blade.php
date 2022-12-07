@@ -29,13 +29,13 @@
         <div class="d-none flex-sm-fill d-sm-flex align-items-sm-center justify-content-sm-between">
             <div>
                 <p class="small text-muted">
-                    {!! __('Showing') !!}
+                    @lang('pagination.showing')
                     <span class="fw-semibold">{{ $paginator->firstItem() }}</span>
-                    {!! __('to') !!}
+                    @lang('pagination.to')
                     <span class="fw-semibold">{{ $paginator->lastItem() }}</span>
-                    {!! __('of') !!}
+                    @lang('pagination.of')
                     <span class="fw-semibold">{{ $paginator->total() }}</span>
-                    {!! __('results') !!}
+                    @lang(request()->segment(1).".plural")
                 </p>
             </div>
 
@@ -82,6 +82,22 @@
                         </li>
                     @endif
                 </ul>
+            </div>
+        </div>
+    </nav>
+@else
+    <nav class="d-flex justify-items-center justify-content-between">
+        <div class="d-none flex-sm-fill d-sm-flex align-items-sm-center justify-content-sm-between">
+            <div>
+                <p class="small text-muted">
+                    @lang('pagination.showing')
+                    <span class="fw-semibold">{{ $paginator->firstItem() }}</span>
+                    @lang('pagination.to')
+                    <span class="fw-semibold">{{ $paginator->lastItem() }}</span>
+                    @lang('pagination.of')
+                    <span class="fw-semibold">{{ $paginator->total() }}</span>
+                    @lang(request()->segment(1).".plural")
+                </p>
             </div>
         </div>
     </nav>

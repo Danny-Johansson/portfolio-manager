@@ -1,7 +1,7 @@
 @section('heading')
-    Demonstration Show
+    @lang(request()->segment(1).".plural")
 @endsection
 
 @section('content')
-    Demonstration Show
+    @lang(request()->segment(1).".plural")
 @endsection

@@ -1,4 +1,4 @@
-@include('partials.inputs.name')
-@include('partials.inputs.text_color')
-@include('partials.inputs.background_color')
-@include('partials.inputs.border_color')
+@include('partials.inputs.string',['name' => 'name','required' => true])
+@include('partials.inputs.color',['type' => 'text','required' => true])
+@include('partials.inputs.color',['type' => 'background','required' => true])
+@include('partials.inputs.color',['type' => 'border','required' => true])

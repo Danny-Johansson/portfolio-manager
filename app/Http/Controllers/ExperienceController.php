@@ -16,7 +16,7 @@ class ExperienceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experiences_index')))
@@ -65,7 +65,7 @@ class ExperienceController extends Controller
     /**
      * Display a listing of the deleted resource.
      */
-    public function deleted(Request $request): View
+    public function deleted(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experiences_deleted')))
@@ -114,7 +114,7 @@ class ExperienceController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experiences_create')))
@@ -139,7 +139,7 @@ class ExperienceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse|View
+    public function store(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experiences_create')))
@@ -153,27 +153,27 @@ class ExperienceController extends Controller
 
         if (isset($request->name) && empty($request->name)){
             return back()
-                ->with('error',__('name')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.name')." ".__('system.cannot')." ".__('system.beBlank'))
                 ;
         }
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         if(config('system.demo_mode') AND Str::contains($request->location,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('location')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('location')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         if(config('system.demo_mode') AND Str::contains($request->note,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('note')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('note')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
@@ -189,14 +189,14 @@ class ExperienceController extends Controller
 
         return redirect()
             ->route('experiences.index')
-            ->with('success',__('experience')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('created'))
+            ->with('success',__('experience')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.created'))
         ;
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($experience): View
+    public function show($experience): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experiences_view')))
@@ -209,6 +209,12 @@ class ExperienceController extends Controller
         }
 
         $object = Experience::where('id','=',$experience)->first();
+        if(!$object){
+            return redirect()
+                ->route('experiences.index')
+                ->with('error',__('experience')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.show')
             ->with('data',$object)
@@ -220,7 +226,7 @@ class ExperienceController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($experience): View
+    public function edit($experience): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experiences_update')))
@@ -235,6 +241,12 @@ class ExperienceController extends Controller
         $types = ExperienceType::all();
 
         $object = Experience::where('id','=',$experience)->first();
+        if(!$object){
+            return redirect()
+                ->route('experiences.index')
+                ->with('error',__('experience')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.edit')
             ->with('data',$object)
@@ -247,7 +259,7 @@ class ExperienceController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update($experience, Request $request): RedirectResponse|View
+    public function update($experience, Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experiences_update')))
@@ -261,26 +273,32 @@ class ExperienceController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         if(config('system.demo_mode') AND Str::contains($request->location,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('location')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('location')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         if(config('system.demo_mode') AND Str::contains($request->note,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('note')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('note')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         $object = Experience::where('id', '=', $experience)->first();
+        if(!$object){
+            return redirect()
+                ->route('experiences.index')
+                ->with('error',__('experience')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         if (isset($request->name) && !empty($request->name)){
             $object->name = $request->name;
@@ -313,14 +331,14 @@ class ExperienceController extends Controller
 
         return redirect()
             ->route('experiences.index')
-            ->with('success',__('experience')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('updated'))
+            ->with('success',__('experience')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.updated'))
         ;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($experience): RedirectResponse|View
+    public function destroy($experience): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experiences_delete')))
@@ -333,22 +351,28 @@ class ExperienceController extends Controller
         }
 
         $object = Experience::where('id','=',$experience)->first();
+        if(!$object){
+            return redirect()
+                ->route('experiences.index')
+                ->with('error',__('experience')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->delete();
 
         return redirect()
             ->route('experiences.index')
-            ->with('success',__('experience')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('deleted'))
+            ->with('success',__('experience')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.deleted'))
         ;
     }
 
     /**
      * Permanently Remove the specified resource from storage.
      */
-    public function destroy_force($experience): RedirectResponse|View
+    public function destroy_force($experience): View|RedirectResponse
     {
         if(Auth::user()){
-            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experiences_delete_force')))
+            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experiences_deleteForce')))
             {
                 return view('pages.denied');
             }
@@ -361,19 +385,25 @@ class ExperienceController extends Controller
             ->where('id','=',$experience)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('experiences.deleted')
+                ->with('error',__('experience')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->forceDelete();
 
         return redirect()
             ->route('experiences.deleted')
-            ->with('success',__('experience')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('forceDeleted'))
+            ->with('success',__('experience')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.forceDeleted'))
         ;
     }
 
     /**
      * Restore the specified resource from storage.
      */
-    public function restore($experience): RedirectResponse|View
+    public function restore($experience): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','experiences_restore')))
@@ -389,12 +419,18 @@ class ExperienceController extends Controller
             ->where('id','=',$experience)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('experiences.deleted')
+                ->with('error',__('experience')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->restore();
 
         return redirect()
             ->route('experiences.deleted')
-            ->with('success',__('experience')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('restored'))
+            ->with('success',__('experience')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.restored'))
         ;
     }
 

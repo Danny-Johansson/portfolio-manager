@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Owner;
 use App\Models\Permission;
-use App\Models\Social;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class OwnerController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(): View|RedirectResponse|Factory|Application
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','owner_index')))
@@ -30,6 +31,12 @@ class OwnerController extends Controller
         }
 
         $object = Owner::first();
+        if(!$object){
+            return redirect()
+                ->route('owner.index')
+                ->with('error',__('owner')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('owner.index')
             ->with('data',$object)
@@ -43,7 +50,7 @@ class OwnerController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit()
+    public function edit(): View|RedirectResponse|Factory|Application
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','owner_update')))
@@ -56,8 +63,14 @@ class OwnerController extends Controller
         }
 
         $object = Owner::first();
+        if(!$object){
+            return redirect()
+                ->route('owner.index')
+                ->with('error',__('owner')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
-        return view('general.edit')
+        return view('owner.edit')
             ->with('data',$object)
             ->with('singular','owner')
             ->with('plural','owner')
@@ -67,7 +80,7 @@ class OwnerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request)
+    public function update(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','owner_update')))
@@ -81,68 +94,74 @@ class OwnerController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->first_name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('first_name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('first_name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         if(config('system.demo_mode') AND Str::contains($request->initials,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('initials')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('initials')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
-                ;
+            ;
         }
 
         if(config('system.demo_mode') AND Str::contains($request->last_name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('last_name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('last_name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         if(config('system.demo_mode') AND Str::contains($request->street_name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('street_name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('street_name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         if(config('system.demo_mode') AND Str::contains($request->street_number,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('street_number')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('street_number')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         if(config('system.demo_mode') AND Str::contains($request->email,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('email')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('email')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         if(config('system.demo_mode') AND Str::contains($request->country,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('country')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('country')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         if(config('system.demo_mode') AND Str::contains($request->city,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('city')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('city')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         if(config('system.demo_mode') AND Str::contains($request->zipcode,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('zipcode')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('zipcode')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         $object = Owner::first();
+        if(!$object){
+            return redirect()
+                ->route('owner.index')
+                ->with('error',__('owner')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         if (isset($request->first_name) && !empty($request->first_name)){
             $object->first_name = $request->first_name;
@@ -234,7 +253,7 @@ class OwnerController extends Controller
 
         return redirect()
             ->route('owner.index')
-            ->with('success',__('owner')." ".__('updated'))
+            ->with('success',__('owner')." ".__('system.updated'))
         ;
     }
 
@@ -242,7 +261,7 @@ class OwnerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function image_form(Request $request): RedirectResponse|View
+    public function image_form(): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','owner_update')))
@@ -255,6 +274,12 @@ class OwnerController extends Controller
         }
 
         $object = Owner::first();
+        if(!$object){
+            return redirect()
+                ->route('owner.index')
+                ->with('error',__('owner')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('owner.image')
             ->with('data',$object)
@@ -266,7 +291,7 @@ class OwnerController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function image_submit(Request $request): RedirectResponse|View
+    public function image_submit(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','owner_update')))
@@ -279,6 +304,12 @@ class OwnerController extends Controller
         }
 
         $object = Owner::first();
+        if(!$object){
+            return redirect()
+                ->route('owner.index')
+                ->with('error',__('owner')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         if(!empty($object->image)){
             File::delete($object->image);
@@ -287,8 +318,8 @@ class OwnerController extends Controller
         $file = $request->file('image');
         $destinationPath = 'images';
         $original_name = $file->getClientOriginalName();
-        $orginal_parts = explode(".",$original_name);
-        $extension = $orginal_parts[1];
+        $original_parts = explode(".",$original_name);
+        $extension = $original_parts[1];
         $file_name = "owner.".$extension;
         $file->move($destinationPath,$file_name);
 
@@ -297,7 +328,7 @@ class OwnerController extends Controller
 
         return redirect()
             ->route('owner.index')
-            ->with('success',__('owner')." ".__('image')." ".__('updated'))
+            ->with('success',__('owner')." ".__('image')." ".__('system.updated'))
         ;
 
     }

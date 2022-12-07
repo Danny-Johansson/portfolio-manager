@@ -22,7 +22,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'languages_view'],
             ['name' => 'languages_update'],
             ['name' => 'languages_delete'],
-            ['name' => 'languages_delete_force'],
+            ['name' => 'languages_deleteForce'],
             ['name' => 'languages_restore'],
 
             ['name' => 'languageLevels_index'],
@@ -31,7 +31,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'languageLevels_view'],
             ['name' => 'languageLevels_update'],
             ['name' => 'languageLevels_delete'],
-            ['name' => 'languageLevels_delete_force'],
+            ['name' => 'languageLevels_deleteForce'],
             ['name' => 'languageLevels_restore'],
 
             ['name' => 'demonstrations_index'],
@@ -40,7 +40,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'demonstrations_view'],
             ['name' => 'demonstrations_update'],
             ['name' => 'demonstrations_delete'],
-            ['name' => 'demonstrations_delete_force'],
+            ['name' => 'demonstrations_deleteForce'],
             ['name' => 'demonstrations_restore'],
 
             ['name' => 'demonstrationTypes_index'],
@@ -49,8 +49,17 @@ class PermissionSeeder extends Seeder
             ['name' => 'demonstrationTypes_view'],
             ['name' => 'demonstrationTypes_update'],
             ['name' => 'demonstrationTypes_delete'],
-            ['name' => 'demonstrationTypes_delete_force'],
+            ['name' => 'demonstrationTypes_deleteForce'],
             ['name' => 'demonstrationTypes_restore'],
+
+            ['name' => 'demonstrationModes_index'],
+            ['name' => 'demonstrationModes_deleted'],
+            ['name' => 'demonstrationModes_create'],
+            ['name' => 'demonstrationModes_view'],
+            ['name' => 'demonstrationModes_update'],
+            ['name' => 'demonstrationModes_delete'],
+            ['name' => 'demonstrationModes_deleteForce'],
+            ['name' => 'demonstrationModes_restore'],
 
             ['name' => 'experiences_index'],
             ['name' => 'experiences_deleted'],
@@ -58,7 +67,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'experiences_view'],
             ['name' => 'experiences_update'],
             ['name' => 'experiences_delete'],
-            ['name' => 'experiences_delete_force'],
+            ['name' => 'experiences_deleteForce'],
             ['name' => 'experiences_restore'],
 
             ['name' => 'experienceTypes_index'],
@@ -67,7 +76,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'experienceTypes_view'],
             ['name' => 'experienceTypes_update'],
             ['name' => 'experienceTypes_delete'],
-            ['name' => 'experienceTypes_delete_force'],
+            ['name' => 'experienceTypes_deleteForce'],
             ['name' => 'experienceTypes_restore'],
 
             ['name' => 'projects_index'],
@@ -76,7 +85,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'projects_view'],
             ['name' => 'projects_update'],
             ['name' => 'projects_delete'],
-            ['name' => 'projects_delete_force'],
+            ['name' => 'projects_deleteForce'],
             ['name' => 'projects_restore'],
 
             ['name' => 'jobsearches_index'],
@@ -85,7 +94,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'jobsearches_view'],
             ['name' => 'jobsearches_update'],
             ['name' => 'jobsearches_delete'],
-            ['name' => 'jobsearches_delete_force'],
+            ['name' => 'jobsearches_deleteForce'],
             ['name' => 'jobsearches_restore'],
 
             ['name' => 'jobsearchStatuses_index'],
@@ -94,7 +103,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'jobsearchStatuses_view'],
             ['name' => 'jobsearchStatuses_update'],
             ['name' => 'jobsearchStatuses_delete'],
-            ['name' => 'jobsearchStatuses_delete_force'],
+            ['name' => 'jobsearchStatuses_deleteForce'],
             ['name' => 'jobsearchStatuses_restore'],
 
             ['name' => 'jobsearchTypes_index'],
@@ -103,7 +112,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'jobsearchTypes_view'],
             ['name' => 'jobsearchTypes_update'],
             ['name' => 'jobsearchTypes_delete'],
-            ['name' => 'jobsearchTypes_delete_force'],
+            ['name' => 'jobsearchTypes_deleteForce'],
             ['name' => 'jobsearchTypes_restore'],
 
             ['name' => 'skills_index'],
@@ -112,7 +121,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'skills_view'],
             ['name' => 'skills_update'],
             ['name' => 'skills_delete'],
-            ['name' => 'skills_delete_force'],
+            ['name' => 'skills_deleteForce'],
             ['name' => 'skills_restore'],
 
             ['name' => 'skillLevels_index'],
@@ -121,7 +130,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'skillLevels_view'],
             ['name' => 'skillLevels_update'],
             ['name' => 'skillLevels_delete'],
-            ['name' => 'skillLevels_delete_force'],
+            ['name' => 'skillLevels_deleteForce'],
             ['name' => 'skillLevels_restore'],
 
             ['name' => 'tags_index'],
@@ -130,7 +139,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'tags_view'],
             ['name' => 'tags_update'],
             ['name' => 'tags_delete'],
-            ['name' => 'tags_delete_force'],
+            ['name' => 'tags_deleteForce'],
             ['name' => 'tags_restore'],
 
             ['name' => 'tagCategories_index'],
@@ -139,7 +148,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'tagCategories_view'],
             ['name' => 'tagCategories_update'],
             ['name' => 'tagCategories_delete'],
-            ['name' => 'tagCategories_delete_force'],
+            ['name' => 'tagCategories_deleteForce'],
             ['name' => 'tagCategories_restore'],
 
             ['name' => 'socials_index'],
@@ -148,9 +157,8 @@ class PermissionSeeder extends Seeder
             ['name' => 'socials_view'],
             ['name' => 'socials_update'],
             ['name' => 'socials_delete'],
-            ['name' => 'socials_delete_force'],
+            ['name' => 'socials_deleteForce'],
             ['name' => 'socials_restore'],
-
 
             ['name' => 'certificates_index'],
             ['name' => 'certificates_deleted'],
@@ -158,7 +166,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'certificates_view'],
             ['name' => 'certificates_update'],
             ['name' => 'certificates_delete'],
-            ['name' => 'certificates_delete_force'],
+            ['name' => 'certificates_deleteForce'],
             ['name' => 'certificates_restore'],
 
             ['name' => 'certificateIssuers_index'],
@@ -167,8 +175,17 @@ class PermissionSeeder extends Seeder
             ['name' => 'certificateIssuers_view'],
             ['name' => 'certificateIssuers_update'],
             ['name' => 'certificateIssuers_delete'],
-            ['name' => 'certificateIssuers_delete_force'],
+            ['name' => 'certificateIssuers_deleteForce'],
             ['name' => 'certificateIssuers_restore'],
+
+            ['name' => 'features_index'],
+            ['name' => 'features_deleted'],
+            ['name' => 'features_create'],
+            ['name' => 'features_view'],
+            ['name' => 'features_update'],
+            ['name' => 'features_delete'],
+            ['name' => 'features_deleteForce'],
+            ['name' => 'features_restore'],
 
             ['name' => 'roles_index'],
             ['name' => 'roles_deleted'],
@@ -176,7 +193,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'roles_view'],
             ['name' => 'roles_update'],
             ['name' => 'roles_delete'],
-            ['name' => 'roles_delete_force'],
+            ['name' => 'roles_deleteForce'],
             ['name' => 'roles_restore'],
 
             ['name' => 'users_index'],
@@ -185,7 +202,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'users_view'],
             ['name' => 'users_update'],
             ['name' => 'users_delete'],
-            ['name' => 'users_delete_force'],
+            ['name' => 'users_deleteForce'],
             ['name' => 'users_restore'],
 
             ['name' => 'owner_index'],

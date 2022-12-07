@@ -16,7 +16,7 @@ class SkillController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skills_index')))
@@ -65,7 +65,7 @@ class SkillController extends Controller
     /**
      * Display a listing of the deleted resource.
      */
-    public function deleted(Request $request): View
+    public function deleted(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skills_deleted')))
@@ -115,7 +115,7 @@ class SkillController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skills_create')))
@@ -139,7 +139,7 @@ class SkillController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse|View
+    public function store(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skills_create')))
@@ -153,7 +153,7 @@ class SkillController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
@@ -166,21 +166,21 @@ class SkillController extends Controller
         }
         else{
             return back()
-                ->with('error',__('name')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.name')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
 
         return redirect()
             ->route('skills.index')
-            ->with('success',__('skill')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('created'))
+            ->with('success',__('skill')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.created'))
         ;
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($skill): View
+    public function show($skill): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skills_view')))
@@ -193,6 +193,12 @@ class SkillController extends Controller
         }
 
         $object = Skill::where('id','=',$skill)->first();
+        if(!$object){
+            return redirect()
+                ->route('skills.index')
+                ->with('error',__('skill')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.show')
             ->with('data',$object)
@@ -204,7 +210,7 @@ class SkillController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($skill): View
+    public function edit($skill): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skills_update')))
@@ -217,6 +223,12 @@ class SkillController extends Controller
         }
 
         $object = Skill::where('id','=',$skill)->first();
+        if(!$object){
+            return redirect()
+                ->route('skills.index')
+                ->with('error',__('skill')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.edit')
             ->with('data',$object)
@@ -228,7 +240,7 @@ class SkillController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update($skill, Request $request): RedirectResponse|View
+    public function update($skill, Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skills_update')))
@@ -242,12 +254,18 @@ class SkillController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         $object = Skill::where('id', '=', $skill)->first();
+        if(!$object){
+            return redirect()
+                ->route('skills.index')
+                ->with('error',__('skill')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         if (isset($request->name) && !empty($request->name)){
             $object->name = $request->name;
@@ -261,14 +279,14 @@ class SkillController extends Controller
 
         return redirect()
             ->route('skills.index')
-            ->with('success',__('skill')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('updated'))
+            ->with('success',__('skill')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.updated'))
         ;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($skill): RedirectResponse|View
+    public function destroy($skill): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skills_delete')))
@@ -281,22 +299,28 @@ class SkillController extends Controller
         }
 
         $object = Skill::where('id','=',$skill)->first();
+        if(!$object){
+            return redirect()
+                ->route('skills.index')
+                ->with('error',__('skill')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->delete();
 
         return redirect()
             ->route('skills.index')
-            ->with('success',__('skill')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('deleted'))
+            ->with('success',__('skill')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.deleted'))
         ;
     }
 
     /**
      * Permanently Remove the specified resource from storage.
      */
-    public function destroy_force($skill): RedirectResponse|View
+    public function destroy_force($skill): View|RedirectResponse
     {
         if(Auth::user()){
-            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skills_delete_force')))
+            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skills_deleteForce')))
             {
                 return view('pages.denied');
             }
@@ -309,19 +333,25 @@ class SkillController extends Controller
             ->where('id','=',$skill)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('skills.deleted')
+                ->with('error',__('skill')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->forceDelete();
 
         return redirect()
             ->route('skills.deleted')
-            ->with('success',__('skill')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('forceDeleted'))
+            ->with('success',__('skill')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.forceDeleted'))
         ;
     }
 
     /**
      * Restore the specified resource from storage.
      */
-    public function restore($skill): RedirectResponse|View
+    public function restore($skill): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skills_restore')))
@@ -337,12 +367,18 @@ class SkillController extends Controller
             ->where('id','=',$skill)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('skills.deleted')
+                ->with('error',__('skill')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->restore();
 
         return redirect()
             ->route('skills.deleted')
-            ->with('success',__('skill')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('restored'))
+            ->with('success',__('skill')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.restored'))
         ;
     }
 

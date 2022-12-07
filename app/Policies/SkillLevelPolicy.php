@@ -3,7 +3,6 @@
 namespace App\Policies;
 
 use App\Models\Permission;
-use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use Illuminate\Auth\Access\Response;
 use Illuminate\Support\Facades\Auth;
@@ -103,7 +102,7 @@ class SkillLevelPolicy
      */
     public function delete_force(): Response
     {
-        return Auth::user()->role->permissions->contains(Permission::firstWhere('name','=','skillLevels_delete_force'))
+        return Auth::user()->role->permissions->contains(Permission::firstWhere('name','=','skillLevels_deleteForce'))
             ? Response::allow()
             : Response::deny('you are not the chosen one')
         ;

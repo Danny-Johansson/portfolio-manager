@@ -13,8 +13,6 @@ class OwnerPolicy
 
     /**
      * Create a new policy instance.
-     *
-     * @return void
      */
     public function __construct()
     {

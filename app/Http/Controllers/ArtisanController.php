@@ -16,7 +16,7 @@ class ArtisanController extends Controller
 
         return redirect()
             ->route('root')
-            ->with('success', 'Cached Config, Views and Routes')
+            ->with('success', __('artisan.cached')." ".__('artisan.config').", ".__('artisan.views')." ".__('artisan.and')." ".__('artisan.routes'))
         ;
     }
 
@@ -26,7 +26,7 @@ class ArtisanController extends Controller
 
         return redirect()
             ->route('root')
-            ->with('success', 'Cached Config')
+            ->with('success', __('artisan.cached')." ".__('artisan.config'))
         ;
     }
 
@@ -36,7 +36,7 @@ class ArtisanController extends Controller
 
         return redirect()
             ->route('root')
-            ->with('success', 'Cached Views')
+            ->with('success', __('artisan.cached')." ".__('artisan.views'))
         ;
     }
 
@@ -46,7 +46,7 @@ class ArtisanController extends Controller
 
         return redirect()
             ->route('root')
-            ->with('success', 'Cached Routes')
+            ->with('success', __('artisan.cached')." ".__('artisan.routes'))
         ;
     }
 
@@ -59,7 +59,7 @@ class ArtisanController extends Controller
 
         return redirect()
             ->route('root')
-            ->with('success', 'Cleared Config, Routes and Views')
+            ->with('success', __('artisan.cleared')." ".__('artisan.config').", ".__('artisan.views')." ".__('artisan.and')." ".__('artisan.routes'))
         ;
     }
 
@@ -69,7 +69,7 @@ class ArtisanController extends Controller
 
         return redirect()
             ->route('root')
-            ->with('success', 'Cleared Config')
+            ->with('success', __('artisan.cleared')." ".__('artisan.config'))
         ;
     }
 
@@ -79,7 +79,7 @@ class ArtisanController extends Controller
 
         return redirect()
             ->route('root')
-            ->with('success', 'Cleared Views')
+            ->with('success', __('artisan.cleared')." ".__('artisan.views'))
         ;
     }
 
@@ -89,7 +89,7 @@ class ArtisanController extends Controller
 
         return redirect()
             ->route('root')
-            ->with('success', 'Cleared Routes')
+            ->with('success', __('artisan.cleared')." ".__('artisan.routes'))
         ;
     }
 }

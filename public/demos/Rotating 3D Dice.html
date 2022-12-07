@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style>
+            :root{
+                --face-size:150px;
+                --half-size: calc(var(--face-size) * 0.5);
+                --negative-half-size: calc(var(--half-size) * -1);
+            }
+
+            @keyframes turn {
+                from {
+                    transform: rotate3d(0, 0, 0, 0);
+                }
+                to {
+                    transform: rotate3d(1, 1, 0, 360deg);
+                }
+            }
+            .cube {
+                width: var(--half-size);
+                height: var(--half-size);
+                transform-style: preserve-3d;
+                animation: turn 7.5s linear infinite;
+                margin: var(--half-size);
+            }
+            .face {
+                width: var(--face-size);
+                height: var(--face-size);
+                border: 2px solid #000000;
+                position: absolute;
+                opacity: 0.90;
+                transform: translateZ(var(--half-size));
+            }
+            .front {
+                background: #00ffc6;
+                transform: translateZ(var(--half-size));
+            }
+            .back {
+                background: #ff0000;
+                transform: translateZ(var(--negative-half-size)) rotateY(180deg);
+            }
+            .left {
+                background: #0000ff;
+                transform: translateX(var(--negative-half-size)) rotateY(-90deg);
+            }
+            .right {
+                background: #ff00ff;
+                transform: translateX(var(--half-size)) rotateY(90deg);
+            }
+            .top {
+                background: #ffff00;
+                transform: translateY(var(--negative-half-size)) rotateX(90deg);
+            }
+            .bottom {
+                background: #00ff00;
+                transform: translateY(var(--half-size)) rotateX(-90deg);
+            }
+            span{
+                display:inline-block;
+                width:100%;
+                height:100%;
+                padding-top:calc(50% - calc(var(--face-size) * 0.20));
+                text-align:center;
+                font-size:calc(var(--face-size) * 0.20);
+            }
+        </style>
+        <title>Rotating 3D Cube</title>
+    </head>
+    <body>
+        <div class="cube">
+            <div class="face top">
+                <span>1</span>
+            </div>
+            <div class="face bottom">
+                <span>2</span>
+            </div>
+            <div class="face left">
+                <span>3</span>
+            </div>
+            <div class="face right">
+                <span>4</span>
+            </div>
+            <div class="face front">
+                <span>5</span>
+            </div>
+            <div class="face back">
+                <span>6</span>
+            </div>
+        </div>
+    </body>
+</html>

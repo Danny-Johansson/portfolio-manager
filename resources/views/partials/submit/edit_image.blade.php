@@ -5,7 +5,7 @@
     </div>
     <div class="col">
         <button type="submit" class="btn btn-success text-capitalize">
-            @lang('update') @lang($singular) @lang('image')
+            @lang('update') @lang(request()->segment(1).".".$singular) @lang('image')
         </button>
     </div>
 </div>

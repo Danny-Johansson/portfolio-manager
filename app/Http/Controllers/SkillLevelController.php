@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Permission;
-use App\Models\Skill;
 use App\Models\SkillLevel;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -16,7 +15,7 @@ class SkillLevelController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skillLevels_index')))
@@ -65,7 +64,7 @@ class SkillLevelController extends Controller
     /**
      * Display a listing of the deleted resource.
      */
-    public function deleted(Request $request): View
+    public function deleted(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skillLevels_deleted')))
@@ -115,7 +114,7 @@ class SkillLevelController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skillLevels_create')))
@@ -136,7 +135,7 @@ class SkillLevelController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse|View
+    public function store(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skillLevels_create')))
@@ -150,7 +149,7 @@ class SkillLevelController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
@@ -162,21 +161,21 @@ class SkillLevelController extends Controller
         }
         else{
             return back()
-                ->with('error',__('name')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.name')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
 
         return redirect()
             ->route('skillLevels.index')
-            ->with('success',__('skillLevel')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('created'))
+            ->with('success',__('skillLevel')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.created'))
         ;
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($skillLevel): View
+    public function show($skillLevel): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skillLevels_view')))
@@ -189,6 +188,12 @@ class SkillLevelController extends Controller
         }
 
         $object = SkillLevel::where('id','=',$skillLevel)->first();
+        if(!$object){
+            return redirect()
+                ->route('skillLevels.index')
+                ->with('error',__('skillLevel')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.show')
             ->with('data',$object)
@@ -200,7 +205,7 @@ class SkillLevelController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($skillLevel): View
+    public function edit($skillLevel): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skillLevels_update')))
@@ -213,6 +218,12 @@ class SkillLevelController extends Controller
         }
 
         $object = SkillLevel::where('id','=',$skillLevel)->first();
+        if(!$object){
+            return redirect()
+                ->route('skillLevels.index')
+                ->with('error',__('skillLevel')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.edit')
             ->with('data',$object)
@@ -224,7 +235,7 @@ class SkillLevelController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update($skillLevel, Request $request): RedirectResponse|View
+    public function update($skillLevel, Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skillLevels_update')))
@@ -238,12 +249,18 @@ class SkillLevelController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         $object = SkillLevel::where('id', '=', $skillLevel)->first();
+        if(!$object){
+            return redirect()
+                ->route('skillLevels.index')
+                ->with('error',__('skillLevel')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         if (isset($request->name) && !empty($request->name)){
             $object->name = $request->name;
@@ -253,14 +270,14 @@ class SkillLevelController extends Controller
 
         return redirect()
             ->route('skillLevels.index')
-            ->with('success',__('skillLevel')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('updated'))
+            ->with('success',__('skillLevel')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.updated'))
         ;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($skillLevel): RedirectResponse|View
+    public function destroy($skillLevel): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skillLevels_delete')))
@@ -273,22 +290,28 @@ class SkillLevelController extends Controller
         }
 
         $object = SkillLevel::where('id','=',$skillLevel)->first();
+        if(!$object){
+            return redirect()
+                ->route('skillLevels.index')
+                ->with('error',__('skillLevel')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->delete();
 
         return redirect()
             ->route('skillLevels.index')
-            ->with('success',__('skillLevel')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('deleted'))
+            ->with('success',__('skillLevel')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.deleted'))
         ;
     }
 
     /**
      * Permanently Remove the specified resource from storage.
      */
-    public function destroy_force($skillLevel): RedirectResponse|View
+    public function destroy_force($skillLevel): View|RedirectResponse
     {
         if(Auth::user()){
-            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skillLevels_delete_force')))
+            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skillLevels_deleteForce')))
             {
                 return view('pages.denied');
             }
@@ -301,19 +324,25 @@ class SkillLevelController extends Controller
             ->where('id','=',$skillLevel)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('skillLevels.deleted')
+                ->with('error',__('skillLevel')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->forceDelete();
 
         return redirect()
             ->route('skillLevels.deleted')
-            ->with('success',__('skillLevel')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('forceDeleted'))
+            ->with('success',__('skillLevel')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.forceDeleted'))
         ;
     }
 
     /**
      * Restore the specified resource from storage.
      */
-    public function restore($skillLevel): RedirectResponse|View
+    public function restore($skillLevel): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','skillLevels_restore')))
@@ -329,12 +358,18 @@ class SkillLevelController extends Controller
             ->where('id','=',$skillLevel)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('skillLevels.deleted')
+                ->with('error',__('skillLevel')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->restore();
 
         return redirect()
             ->route('skillLevels.deleted')
-            ->with('success',__('skillLevel')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('restored'))
+            ->with('success',__('skillLevel')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.restored'))
         ;
     }
 }

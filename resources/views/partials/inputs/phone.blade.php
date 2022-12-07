@@ -11,8 +11,10 @@
             id="phone"
             class="form-control"
             placeholder="@lang('+45 12 34 56 78')"
-            required
-            value="@if(old('phone')){{old('phone')}}@elseif(isset($data->phone)){{$data->phone}}@endif"
+            @if(isset($required))
+                required
+            @endif
+            value="@if(old('phone')){{old('phone')}}@elseif(config('system.demo_mode')){{config('system.phone')}}@elseif(isset($data->phone)){{$data->phone}}@endif"
         >
     </div>
 </div>

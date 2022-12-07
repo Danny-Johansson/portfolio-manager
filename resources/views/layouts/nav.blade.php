@@ -11,25 +11,24 @@
             <!-- Left Side Of Navbar -->
             <ul class="navbar-nav me-auto">
                 <li class="nav-item">
-                    <a class="nav-link text-capitalize" href="{{ route('about') }}">@lang('about') {{config('system.first_name')}}</a>
+                    <a class="nav-link text-capitalize" href="{{ route('about') }}">@lang('navigation.about') {{config('owner.first_name')}}</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link text-capitalize" href="{{ route('resume') }}">@lang('resume')</a>
-                </li>
-                <!--
-                <li class="nav-item">
-                    <a class="nav-link text-capitalize" href="{{ route('projects.index') }}">@lang('projects')</a>
+                    <a class="nav-link text-capitalize" href="{{ route('resume') }}">@lang('navigation.resume')</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link text-capitalize" href="{{ route('demonstrations.index') }}">CSS @lang('demonstrations')</a>
+                    <a class="nav-link text-capitalize" href="{{ route('projects.index') }}">@lang('projects.plural')</a>
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link text-capitalize" href="{{ route('jobsearches.index') }}">@lang('jobsearch')</a>
+                    <a class="nav-link text-capitalize" href="{{ route('demonstrations.index') }}">@lang('demonstrations.plural')</a>
                 </li>
-                -->
+
+                <li class="nav-item">
+                    <a class="nav-link text-capitalize" href="{{ route('jobsearches.index') }}">@lang('jobsearches.plural')</a>
+                </li>
             </ul>
 
             <!-- Right Side Of Navbar -->
@@ -42,96 +41,104 @@
                     @endif
                 @else
                     <li class="nav-item dropdown">
-                        <a id="navbarDropdown" class="nav-link dropdown-toggle text-capitalize" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                            @lang('administration')
+                        <a id="navbarDropdown" class="nav-link dropdown-toggle text-capitalize" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            @lang('navigation.administration')
                         </a>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
 
-                            <h6 class="dropdown-header text-capitalize">@lang('system')</h6>
+                            <h6 class="dropdown-header text-capitalize">@lang('navigation.system')</h6>
 
                             <a class="dropdown-item text-capitalize" href="{{ route('roles.index') }}">
-                                @lang('roles')
+                                @lang('roles.plural')
                             </a>
 
                             <a class="dropdown-item text-capitalize" href="{{ route('users.index') }}">
-                                @lang('users')
+                                @lang('users.plural')
                             </a>
 
                             <div class="dropdown-divider"></div>
 
-                            <h6 class="dropdown-header text-capitalize">@lang('portfolio') @lang('related')</h6>
+                            <h6 class="dropdown-header text-capitalize">@lang('navigation.portfolio') @lang('navigation.related')</h6>
 
                             <a class="dropdown-item text-capitalize" href="{{ route('tagCategories.index') }}">
-                                @lang('tagCategories')
+                                @lang('tagCategories.plural')
                             </a>
 
                             <a class="dropdown-item text-capitalize" href="{{ route('tags.index') }}">
-                                @lang('tags')
+                                @lang('tags.plural')
                             </a>
 
                             <a class="dropdown-item text-capitalize" href="{{ route('demonstrationTypes.index') }}">
-                                @lang('demonstrationTypes')
+                                @lang('demonstrationTypes.plural')
+                            </a>
+
+                            <a class="dropdown-item text-capitalize" href="{{ route('demonstrationModes.index') }}">
+                                @lang('demonstrationModes.plural')
+                            </a>
+
+                            <a class="dropdown-item text-capitalize" href="{{ route('features.index') }}">
+                                @lang('features.plural')
                             </a>
 
                             <div class="dropdown-divider"></div>
 
-                            <h6 class="dropdown-header text-capitalize">@lang('resume') @lang('related')</h6>
+                            <h6 class="dropdown-header text-capitalize">@lang('navigation.resume') @lang('navigation.related')</h6>
 
                             <a class="dropdown-item text-capitalize" href="{{ route('owner.index') }}">
-                                @lang('owner')
+                                @lang('owner.owner')
                             </a>
 
                             <a class="dropdown-item text-capitalize" href="{{ route('socials.index') }}">
-                                @lang('socials')
+                                @lang('socials.plural')
                             </a>
 
                             <a class="dropdown-item text-capitalize" href="{{ route('skillLevels.index') }}">
-                                @lang('skillLevels')
+                                @lang('skillLevels.plural')
                             </a>
 
                             <a class="dropdown-item text-capitalize" href="{{ route('skills.index') }}">
-                                @lang('skills')
+                                @lang('skills.plural')
                             </a>
 
                             <a class="dropdown-item text-capitalize" href="{{ route('languageLevels.index') }}">
-                                @lang('languageLevels')
+                                @lang('languageLevels.plural')
                             </a>
 
                             <a class="dropdown-item text-capitalize" href="{{ route('languages.index') }}">
-                                @lang('languages')
+                                @lang('languages.plural')
                             </a>
 
                             <a class="dropdown-item text-capitalize" href="{{ route('experienceTypes.index') }}">
-                                @lang('experienceTypes')
+                                @lang('experienceTypes.plural')
                             </a>
 
                             <a class="dropdown-item text-capitalize" href="{{ route('experiences.index') }}">
-                                @lang('experiences')
+                                @lang('experiences.plural')
                             </a>
 
                             <a class="dropdown-item text-capitalize" href="{{ route('certificateIssuers.index') }}">
-                                @lang('certificateIssuers')
+                                @lang('certificateIssuers.plural')
                             </a>
 
                             <a class="dropdown-item text-capitalize" href="{{ route('certificates.index') }}">
-                                @lang('certificates')
+                                @lang('certificates.plural')
                             </a>
 
                             <div class="dropdown-divider"></div>
 
-                            <h6 class="dropdown-header text-capitalize">@lang('jobsearch') @lang('related')</h6>
+                            <h6 class="dropdown-header text-capitalize">@lang('jobsearches.singular') @lang('navigation.related')</h6>
 
                             <a class="dropdown-item text-capitalize" href="{{ route('jobsearchTypes.index') }}">
-                                @lang('jobsearchTypes')
+                                @lang('jobsearchTypes.plural')
                             </a>
 
                             <a class="dropdown-item text-capitalize" href="{{ route('jobsearchStatuses.index') }}">
-                                @lang('jobsearchStatuses')
+                                @lang('jobsearchStatuses.plural')
                             </a>
                         </div>
                     </li>
                     <li class="nav-item dropdown">
-                        <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                        <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             {{ Auth::user()->name }}
                         </a>
 
@@ -152,3 +159,6 @@
         </div>
     </div>
 </nav>
+<script>
+
+</script>

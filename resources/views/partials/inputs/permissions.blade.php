@@ -1,7 +1,7 @@
 <div class="row mb-2">
     <div class="col-2">
         <label class="form-label text-capitalize fw-bold">
-            @lang('permissions') :
+            @lang('system.permissions') :
         </label>
     </div>
     <div class="col-10">
@@ -28,7 +28,15 @@
                     <td class="col-10">
                         <label for="permission_{{$permission->id}}" class="mt-1 text-capitalize">
                             @for($i = 0;$i <= count($parts) - 1;$i++)
-                                @lang($parts[$i])
+                                @switch($i)
+                                    @case(0)
+                                        @lang($parts[0].".plural")
+                                        @break
+                                    @case(1)
+                                        @lang("system.".$parts[$i])
+                                        @break
+                                @endswitch
+
                             @endfor
                         </label>
                     </td>

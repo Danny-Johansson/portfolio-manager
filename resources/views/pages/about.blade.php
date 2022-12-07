@@ -1,12 +1,12 @@
 @extends('layouts.app')
 
 @section('heading')
-    @lang('about') {{$owner->first_name}}
+    @lang('navigation.about') {{$owner->first_name}}
 @endsection
 
 @section('content')
     <div class="row">
-        <div class="col-auto">
+        <div class="col-2">
             @if(isset($owner->image) AND !empty($owner->image))
                 <img
                     src="{{$owner->image}}"
@@ -16,10 +16,16 @@
                 >
             @endif
         </div>
-        <div class="col-auto">
-            @lang('journeyman')
+        <div class="col-10">
+            @lang('about.journeyman')
             <br><br>
-            @lang('spare_time')
+            @lang('about.spare_time')
+            @lang('about.gaming')
+            <br><br>
+            @lang('about.fantasy')
+            @lang('about.book')
+            <br><br>
+            @lang('about.programming')
         </div>
     </div>
 @endsection

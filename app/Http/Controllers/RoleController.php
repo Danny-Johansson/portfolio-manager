@@ -15,7 +15,7 @@ class RoleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=', 'roles_index')))
@@ -64,7 +64,7 @@ class RoleController extends Controller
     /**
      * Display a listing of the deleted resource.
      */
-    public function deleted(Request $request): View
+    public function deleted(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=', 'roles_deleted')))
@@ -114,7 +114,7 @@ class RoleController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=', 'roles_create')))
@@ -138,7 +138,7 @@ class RoleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse|View
+    public function store(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=', 'roles_create')))
@@ -152,7 +152,7 @@ class RoleController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
@@ -164,7 +164,7 @@ class RoleController extends Controller
         }
         else{
             return back()
-                ->with('error',__('name')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.name')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
@@ -173,14 +173,14 @@ class RoleController extends Controller
 
         return redirect()
             ->route('roles.index')
-            ->with('success',__('role')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('created'))
+            ->with('success',__('role')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.created'))
         ;
     }
 
     /**
      * Display the specified resource.
      */
-    public function show($role): View
+    public function show($role): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=', 'roles_view')))
@@ -193,6 +193,12 @@ class RoleController extends Controller
         }
 
         $object = Role::where('id','=',$role)->first();
+        if(!$object){
+            return redirect()
+                ->route('roles.index')
+                ->with('error',__('role')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.show')
             ->with('data',$object)
@@ -204,7 +210,7 @@ class RoleController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($role): View
+    public function edit($role): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=', 'roles_update')))
@@ -217,6 +223,13 @@ class RoleController extends Controller
         }
 
         $object = Role::where('id','=',$role)->first();
+        if(!$object){
+            return redirect()
+                ->route('roles.index')
+                ->with('error',__('role')." ".__('not')." ".__('system.found'))
+            ;
+        }
+
         $permissions = Permission::all();
 
         return view('general.edit')
@@ -230,7 +243,7 @@ class RoleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update($role, Request $request): RedirectResponse|View
+    public function update($role, Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=', 'roles_update')))
@@ -244,12 +257,18 @@ class RoleController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         $object = Role::where('id', '=', $role)->first();
+        if(!$object){
+            return redirect()
+                ->route('roles.index')
+                ->with('error',__('role')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         if (isset($request->name) && !empty($request->name)){
             $object->name = $request->name;
@@ -261,14 +280,14 @@ class RoleController extends Controller
 
         return redirect()
             ->route('roles.index')
-            ->with('success',__('role')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('updated'))
+            ->with('success',__('role')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.updated'))
         ;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($role): RedirectResponse|View
+    public function destroy($role): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=', 'roles_delete')))
@@ -281,22 +300,28 @@ class RoleController extends Controller
         }
 
         $object = Role::where('id','=',$role)->first();
+        if(!$object){
+            return redirect()
+                ->route('roles.index')
+                ->with('error',__('role')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->delete();
 
         return redirect()
             ->route('roles.index')
-            ->with('success',__('role')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('deleted'))
+            ->with('success',__('role')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.deleted'))
         ;
     }
 
     /**
      * Permanently Remove the specified resource from storage.
      */
-    public function destroy_force($role): RedirectResponse|View
+    public function destroy_force($role): View|RedirectResponse
     {
         if(Auth::user()){
-            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=', 'roles_delete_force')))
+            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=', 'roles_deleteForce')))
             {
                 return view('pages.denied');
             }
@@ -309,19 +334,25 @@ class RoleController extends Controller
             ->where('id','=',$role)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('roles.deleted')
+                ->with('error',__('role')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->forceDelete();
 
         return redirect()
             ->route('roles.deleted')
-            ->with('success',__('role')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('forceDeleted'))
+            ->with('success',__('role')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.forceDeleted'))
         ;
     }
 
     /**
      * Restore the specified resource from storage.
      */
-    public function restore($role): RedirectResponse|View
+    public function restore($role): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=', 'roles_restore')))
@@ -337,12 +368,18 @@ class RoleController extends Controller
             ->where('id','=',$role)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('roles.deleted')
+                ->with('error',__('role')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->restore();
 
         return redirect()
             ->route('roles.deleted')
-            ->with('success',__('role')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('restored'))
+            ->with('success',__('role')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.restored'))
         ;
     }
 

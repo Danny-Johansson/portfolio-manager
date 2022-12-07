@@ -13,8 +13,6 @@ class TagPolicy
 
     /**
      * Create a new policy instance.
-     *
-     * @return void
      */
     public function __construct()
     {
@@ -103,7 +101,7 @@ class TagPolicy
      */
     public function delete_force(): Response
     {
-        return Auth::user()->role->permissions->contains(Permission::firstWhere('name','=','tags_delete_force'))
+        return Auth::user()->role->permissions->contains(Permission::firstWhere('name','=','tags_deleteForce'))
             ? Response::allow()
             : Response::deny('you are not the chosen one')
         ;

@@ -9,11 +9,13 @@ use App\Models\Language;
 use App\Models\Owner;
 use App\Models\Skill;
 use App\Models\Social;
-use Illuminate\Http\Request;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 
 class PageController extends Controller
 {
-    public function root()
+    public function root(): Factory|View|Application
     {
         $owner = Owner::first();
 
@@ -22,12 +24,12 @@ class PageController extends Controller
         ;
     }
 
-    public function home()
+    public function home(): Factory|View|Application
     {
         return view('pages.home');
     }
 
-    public function about()
+    public function about(): Factory|View|Application
     {
         $owner = Owner::first();
 
@@ -36,9 +38,10 @@ class PageController extends Controller
         ;
     }
 
-    public function resume()
+    public function resume(): Factory|View|Application
     {
         $owner = Owner::first();
+
 
         $educations = Experience::where('experience_type_id','=',ExperienceType::where('name','=','Education')->first()->id)
             ->orderBy('start_date','DESC')
@@ -59,7 +62,10 @@ class PageController extends Controller
         $languages = Language::orderBy('name','ASC')->get();
         $skills = Skill::orderBy('name','ASC')->get();
         $socials = Social::orderBy('name','ASC')->get();
-        $certificates = Certificate::orderBy('name','ASC')->get();
+        $certificates = Certificate::orderBy('earn_date','DESC')
+            ->orderBy('name','ASC')
+            ->get()
+        ;
 
         return view('pages.resume')
             ->with('owner',$owner)

@@ -16,7 +16,7 @@ class TagController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tags_index')))
@@ -65,7 +65,7 @@ class TagController extends Controller
     /**
      * Display a listing of the deleted resource.
      */
-    public function deleted(Request $request): View
+    public function deleted(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tags_deleted')))
@@ -115,7 +115,7 @@ class TagController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tags_create')))
@@ -139,7 +139,7 @@ class TagController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): RedirectResponse|View
+    public function store(Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tags_create')))
@@ -153,14 +153,14 @@ class TagController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
-        if (!isset($request->name) && !empty($request->name)){
+        if (isset($request->name) && empty($request->name)){
             return back()
-                ->with('error',__('name')." ".__('cannot')." ".__('beBlank'))
+                ->with('error',__('inputs.name')." ".__('system.cannot')." ".__('system.beBlank'))
                 ->withInput()
             ;
         }
@@ -176,7 +176,7 @@ class TagController extends Controller
 
         return redirect()
             ->route('tags.index')
-            ->with('success',__('tag')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('created'))
+            ->with('success',__('tag')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.created'))
         ;
 
     }
@@ -184,7 +184,7 @@ class TagController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($tag): View
+    public function show($tag): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tags_view')))
@@ -197,6 +197,12 @@ class TagController extends Controller
         }
 
         $object = Tag::where('id','=',$tag)->first();
+        if(!$object){
+            return redirect()
+                ->route('tags.index')
+                ->with('error',__('tag')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         return view('general.show')
             ->with('data',$object)
@@ -208,7 +214,7 @@ class TagController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($tag): View
+    public function edit($tag): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tags_update')))
@@ -221,6 +227,13 @@ class TagController extends Controller
         }
 
         $object = Tag::where('id','=',$tag)->first();
+        if(!$object){
+            return redirect()
+                ->route('tags.index')
+                ->with('error',__('tag')." ".__('not')." ".__('system.found'))
+            ;
+        }
+
         $categories = TagCategory::all();
 
         return view('general.edit')
@@ -234,7 +247,7 @@ class TagController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update($tag, Request $request): RedirectResponse|View
+    public function update($tag, Request $request): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tags_update')))
@@ -248,12 +261,19 @@ class TagController extends Controller
 
         if(config('system.demo_mode') AND Str::contains($request->name,config('system.banned_phrases'),true)){
             return back()
-                ->with('error',__('name')." ".__('contains')." ".__('banned')." ".__('phrases'))
+                ->with('error',__('inputs.name')." ".__('system.contains')." ".__('system.banned')." ".__('system.phrases'))
                 ->withInput()
             ;
         }
 
         $object = Tag::where('id', '=', $tag)->first();
+        if(!$object){
+            return redirect()
+                ->route('tags.index')
+                ->with('error',__('tag')." ".__('not')." ".__('system.found'))
+            ;
+        }
+
 
         if (isset($request->name) && !empty($request->name)){
             $object->name = $request->name;
@@ -279,14 +299,14 @@ class TagController extends Controller
 
         return redirect()
             ->route('tags.index')
-            ->with('success',__('tag')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('updated'))
+            ->with('success',__('tag')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.updated'))
         ;
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($tag): RedirectResponse|View
+    public function destroy($tag): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tags_delete')))
@@ -299,22 +319,28 @@ class TagController extends Controller
         }
 
         $object = Tag::where('id','=',$tag)->first();
+        if(!$object){
+            return redirect()
+                ->route('tags.index')
+                ->with('error',__('tag')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->delete();
 
         return redirect()
             ->route('tags.index')
-            ->with('success',__('tag')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('deleted'))
+            ->with('success',__('tag')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.deleted'))
         ;
     }
 
     /**
      * Permanently Remove the specified resource from storage.
      */
-    public function destroy_force($tag): RedirectResponse|View
+    public function destroy_force($tag): View|RedirectResponse
     {
         if(Auth::user()){
-            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tags_delete_force')))
+            if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tags_deleteForce')))
             {
                 return view('pages.denied');
             }
@@ -327,19 +353,25 @@ class TagController extends Controller
             ->where('id','=',$tag)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('tags.deleted')
+                ->with('error',__('tag')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->forceDelete();
 
         return redirect()
             ->route('tags.deleted')
-            ->with('success',__('tag')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('forceDeleted'))
+            ->with('success',__('tag')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.forceDeleted'))
         ;
     }
 
     /**
      * Restore the specified resource from storage.
      */
-    public function restore($tag): RedirectResponse|View
+    public function restore($tag): View|RedirectResponse
     {
         if(Auth::user()){
             if(!Auth::user()->role->permissions->contains(Permission::firstWhere('name', '=','tags_restore')))
@@ -355,12 +387,18 @@ class TagController extends Controller
             ->where('id','=',$tag)
             ->first()
         ;
+        if(!$object){
+            return redirect()
+                ->route('tags.deleted')
+                ->with('error',__('tag')." ".__('not')." ".__('system.found'))
+            ;
+        }
 
         $object->restore();
 
         return redirect()
             ->route('tags.deleted')
-            ->with('success',__('tag')." ".__('with')." ".__('name')." : ".$object->name." ".__('and')." ID : ".$object->id." ".__('restored'))
+            ->with('success',__('tag')." ".__('system.with')." ".__('inputs.name')." : ".$object->name." ".__('system.and')." ID : ".$object->id." ".__('system.restored'))
         ;
     }
 }

@@ -1,0 +1,6 @@
+@include('partials.page_elements.data.data',['type' => 'experiences','data' => $object->name, 'col' => 'auto'])
+@include('partials.page_elements.data.data',['type' => 'experiences','data' => $object->location, 'col' => 'auto'])
+@include('partials.page_elements.data.data',['type' => 'experienceTypes','data' => $object->type->name, 'col' => 'auto'])
+@include('partials.page_elements.data.date',['format' => 'd M Y','data' => $object->start_date, 'col' => '1'])
+@include('partials.page_elements.data.date',['format' => 'd M Y','data' => $object->end_date, 'col' => '1'])
+@include('partials.page_elements.data.data',['type' => 'experiences','data' => $object->note, 'col' => 'auto'])
